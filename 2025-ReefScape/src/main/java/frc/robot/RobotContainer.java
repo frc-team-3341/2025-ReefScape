@@ -4,11 +4,13 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
-
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.Hang;
 import frc.robot.commands.swerve.CrabDrive;
 import frc.robot.commands.swerve.SwerveTeleop;
 import frc.robot.commands.swerve.TestFourModules;
+import frc.robot.subsystems.DeepHang;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
@@ -51,6 +53,7 @@ public class RobotContainer {
   // Xbox + an additional one for PC use
   private final Joystick drivingXbox = new Joystick(0);
   private final Joystick simulationJoy = new Joystick(1);
+  private final Joystick hangXbox = new Joystick(2);
 
   // Chooser for testing teleop commands
   private final SendableChooser<Command> teleopCommandChooser = new SendableChooser<>();
@@ -74,6 +77,8 @@ public class RobotContainer {
   // Empty CrabDrive object
   private CrabDrive crabDrive;
 
+  private DeepHang hang;
+
 
   // Field centric toggle - true for field centric, false for robot centric
   private boolean fieldCentricToggle = true;
@@ -82,12 +87,13 @@ public class RobotContainer {
   public RobotContainer() {
 
     // Construct swerve subsystem with appropriate modules - DO NOT REMOVE THIS
-    this.constructSwerve();
+    //this.constructSwerve();
 
     // Create swerve commands - DO NOT REMOVE THIS
-    this.createSwerveCommands();
+    //this.createSwerveCommands();
 
-    
+    this.configureDeepHang();
+
     // Construct all other things
     this.configureBindings();
 
@@ -189,12 +195,26 @@ public class RobotContainer {
     SmartDashboard.putData(teleopCommandChooser);
   }
 
+  public void configureDeepHang() {
+    hang = new DeepHang();
+
+    POVButton hangUp = new POVButton(hangXbox, 90);
+    POVButton hangDown = new POVButton(hangXbox, 270);
+
+    hangUp.whileTrue(new Hang(hang, hangXbox));
+    hangDown.whileTrue(new Hang(hang, hangXbox));
+  }
+
   private void configureBindings() {
   }
 
   public Command getAutonomousCommand() {
     return null;
     
+  }
+
+  public Joystick getHangXbox() {
+    return hangXbox;
   }
 
 

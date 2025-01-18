@@ -23,7 +23,7 @@ public class DeepHang extends SubsystemBase {
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  public DigitalInput limit;
+  public DigitalInput sensor;
 
   public boolean override = false;
 
@@ -34,12 +34,12 @@ public class DeepHang extends SubsystemBase {
     SparkMaxConfig config = new SparkMaxConfig();
     hangSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    hangSparkMax = new SparkMax(0, MotorType.kBrushless); //deviceID = 0?
+    hangSparkMax = new SparkMax(22, MotorType.kBrushless); //CANID = 22
 
     upperLimit = hangSparkMax.getForwardLimitSwitch();
     lowerLimit = hangSparkMax.getReverseLimitSwitch();
 
-    limit = new DigitalInput(0); //proximity sensor?
+    sensor = new DigitalInput(0); //proximity sensor?
 
     encoder = hangSparkMax.getEncoder();
 
@@ -48,12 +48,12 @@ public class DeepHang extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (upperLimit.isPressed() || limit.get()) {
+    if (upperLimit.isPressed() || sensor.get()) {
       hangSparkMax.set(0);
       override = true;  
     }
     
-    if (lowerLimit.isPressed() || limit.get()) {
+    if (lowerLimit.isPressed() || sensor.get()) {
       hangSparkMax.set(0);
       override = true;
     }
@@ -61,8 +61,8 @@ public class DeepHang extends SubsystemBase {
     SmartDashboard.putBoolean("upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("lower Limit", lowerLimit.isPressed());
 
-    SmartDashboard.putBoolean("proximity sensor", limit.get());
-    
+    SmartDashboard.putBoolean("proximity sensor", sensor.get());
+
     SmartDashboard.putNumber("encoder position", encoder.getPosition());
   }
 
@@ -70,7 +70,7 @@ public class DeepHang extends SubsystemBase {
     encoder.setPosition(0);
   }
 
-  public void set(double speed) {
+  public void setSpeed(double speed) {
     if (!override) {
       hangSparkMax.set(speed);
     } else {
