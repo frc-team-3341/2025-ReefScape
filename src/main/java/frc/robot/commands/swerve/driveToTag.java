@@ -27,6 +27,17 @@ public class driveToTag extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Check if the Limelight sees the tag 
+    double tx = LimelightHelpers.getTX("limelight-shahzhu");
+    double ty = LimelightHelpers.getTY("limelight-shahzhu");
+
+    // If Limelight doesn't see any target, don't move
+    if(Math.abs(tx) < 0.5 && Math.abs(ty) < 0.5){
+      swerve.stopMotors();
+      return;
+    }
+
+    double avgDistance = -1;
     
     // Calculate the angular velocity based on Limelight aiming (proportional control)
     double rot = limelight_aim_proportional();
@@ -45,13 +56,21 @@ public class driveToTag extends Command {
     double[] cameraPoseTargetSpace = LimelightHelpers.getCameraPose_TargetSpace("limelight-shahzhu");
     LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate("limelight-shahzhu", "botpose");
     if (poseEstimate != null) {
-        double avgDistance = poseEstimate.avgTagDist;
+        avgDistance = poseEstimate.avgTagDist;
         //System.out.println("Average Distance from Tag: " + avgDistance);
     } else {
         //System.out.println("No pose estimate available.");
     }
 
-    swerve.drive(new Translation2d(cameraPoseTargetSpace[0], cameraPoseTargetSpace[1]), 90*Math.PI/180, false, false);
+    // Stop the robot if it's within 0.45-0.5 meters of the target
+    double distanceThreshold1 = 0;
+    double distanceThreshold2 = 0.50;
+    if(avgDistance >= distanceThreshold1 && avgDistance <= distanceThreshold2){
+      swerve.stopMotors();
+      return;
+    }
+
+    swerve.drive(new Translation2d(cameraPoseTargetSpace[0] * .02, cameraPoseTargetSpace[1] * .02), 90*Math.PI/180, false, false);
   }
 
   // Called once the command ends or is interrupted.
@@ -60,7 +79,7 @@ public class driveToTag extends Command {
   
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
+  public boolean isFinished() {  
     return false;
   }
 
