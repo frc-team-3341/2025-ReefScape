@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.swerve;
+package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLimitSwitch;
@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,7 +23,9 @@ public class DeepHang extends SubsystemBase {
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  boolean override = false;
+  public DigitalInput limit;
+
+  public boolean override = false;
 
   RelativeEncoder encoder;
 
@@ -36,6 +39,8 @@ public class DeepHang extends SubsystemBase {
     upperLimit = hangSparkMax.getForwardLimitSwitch();
     lowerLimit = hangSparkMax.getReverseLimitSwitch();
 
+    limit = new DigitalInput(0); //proximity sensor?
+
     encoder = hangSparkMax.getEncoder();
 
   }
@@ -43,18 +48,21 @@ public class DeepHang extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (upperLimit.isPressed()) {
+    if (upperLimit.isPressed() || limit.get()) {
       hangSparkMax.set(0);
-      override = true;
+      override = true;  
     }
     
-    if (lowerLimit.isPressed()) {
+    if (lowerLimit.isPressed() || limit.get()) {
       hangSparkMax.set(0);
       override = true;
     }
 
     SmartDashboard.putBoolean("upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("lower Limit", lowerLimit.isPressed());
+
+    SmartDashboard.putBoolean("proximity sensor", limit.get());
+    
     SmartDashboard.putNumber("encoder position", encoder.getPosition());
   }
 
