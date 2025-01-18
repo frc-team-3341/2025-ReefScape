@@ -18,63 +18,57 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DeepHang extends SubsystemBase {
   /** Creates a new DeepHang. */
-  SparkMax hangSparkMax;
+  SparkMax deepHang;
 
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  public DigitalInput sensor;
+  DigitalInput sensor;
 
-  public boolean override = false;
-
-  RelativeEncoder encoder;
+  private RelativeEncoder hangEncoder;
 
   public DeepHang() {
 
+    deepHang = new SparkMax(22, MotorType.kBrushless); //CANID = 22
     SparkMaxConfig config = new SparkMaxConfig();
-    hangSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    hangSparkMax = new SparkMax(22, MotorType.kBrushless); //CANID = 22
+    upperLimit = deepHang.getForwardLimitSwitch();
+    lowerLimit = deepHang.getReverseLimitSwitch();
 
-    upperLimit = hangSparkMax.getForwardLimitSwitch();
-    lowerLimit = hangSparkMax.getReverseLimitSwitch();
+    sensor = new DigitalInput(0); //proximity sensor
 
-    sensor = new DigitalInput(0); //proximity sensor?
+    hangEncoder = deepHang.getEncoder();
 
-    encoder = hangSparkMax.getEncoder();
+  }
 
+  public double getEncoderPosition() {
+    return hangEncoder.getPosition();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (upperLimit.isPressed() || sensor.get()) {
-      hangSparkMax.set(0);
-      override = true;  
-    }
     
-    if (lowerLimit.isPressed() || sensor.get()) {
-      hangSparkMax.set(0);
-      override = true;
-    }
+    // if (upperLimit.isPressed()) {
+    //   deepHang.set(0);  
+    // }
+    
+    // if (lowerLimit.isPressed()) {
+    //   deepHang.set(0);
+    // }
 
     SmartDashboard.putBoolean("upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("lower Limit", lowerLimit.isPressed());
-
     SmartDashboard.putBoolean("proximity sensor", sensor.get());
-
-    SmartDashboard.putNumber("encoder position", encoder.getPosition());
+    SmartDashboard.putNumber("encoder position", (int) getEncoderPosition());
   }
 
   public void resetEncoder() {
-    encoder.setPosition(0);
+    hangEncoder.setPosition(0);
   }
 
   public void setSpeed(double speed) {
-    if (!override) {
-      hangSparkMax.set(speed);
-    } else {
-      hangSparkMax.set(0);
-    }
+    deepHang.set(speed);
   }
 }
