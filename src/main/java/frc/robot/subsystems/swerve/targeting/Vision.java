@@ -119,13 +119,13 @@ public class Vision extends SubsystemBase{
         return 0.0;
     }
 
-    public Pose3d getPose() {
-        field.loadAprilTagLayoutField();
-        fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
-        poseEstimator = new PhotonPoseEstimator(fieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, getTargetData());
-        return poseEstimator.getReferencePose();
+    // public Pose3d getPose() {
+    //     field.loadAprilTagLayoutField();
+    //     fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    //     poseEstimator = new PhotonPoseEstimator(fieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, getTargetData());
+    //     return poseEstimator.getReferencePose();
         
-    }
+    // }
 
    
 
@@ -156,7 +156,7 @@ public class Vision extends SubsystemBase{
 
         // SmartDashboard.putNumber("Horizontal Displacement", getHorizontalDisplacement());
         // SmartDashboard.putNumber("Longitudinal Displacement", getHorizontalDisplacement());
-        SmartDashboard.putNumber("X pose", getPose().getX());
+        // SmartDashboard.putNumber("X pose", getPose().getX());
     }
 
 }

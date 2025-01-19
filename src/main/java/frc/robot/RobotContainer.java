@@ -3,9 +3,17 @@ package frc.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
+import frc.robot.commands.swerve.targeting.Alignment;
+import frc.robot.commands.swerve.targeting.LongitudinalAlignment;
 import frc.robot.subsystems.swerve.SwerveDriveTrain;
+import frc.robot.subsystems.swerve.targeting.Vision;
+
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -35,6 +43,10 @@ public class RobotContainer {
 
   private final SwerveAutonomousCMD serveAutoCMD = new SwerveAutonomousCMD(this.swerveDriveTrain,
           Constants.allianceEnabled);
+
+  private final Alignment align;
+  private final Vision vision;
+  private final PhotonCamera cam = new PhotonCamera("camera");
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
 
@@ -42,6 +54,10 @@ public class RobotContainer {
 
   public RobotContainer() {
     this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
+    vision = new Vision(cam);
+    align = new Alignment(swerveDriveTrain, vision);
+    JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
+    alignButton.toggleOnTrue(align);
     this.configureBindings();
   }
 
@@ -50,7 +66,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return serveAutoCMD;
+    return null;
     
   }
 
