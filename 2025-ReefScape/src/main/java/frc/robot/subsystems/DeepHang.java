@@ -46,6 +46,10 @@ public class DeepHang extends SubsystemBase {
     return hangEncoder.getPosition();
   }
 
+  public double getEncoderVelocity() {
+    return hangEncoder.getVelocity();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -58,9 +62,11 @@ public class DeepHang extends SubsystemBase {
     //   deepHang.set(0);
     // }
 
-    SmartDashboard.putBoolean("upper Limit", upperLimit.isPressed());
-    SmartDashboard.putBoolean("lower Limit", lowerLimit.isPressed());
-    SmartDashboard.putBoolean("proximity sensor", sensor.get());
+    // SmartDashboard.putBoolean("upper Limit", upperLimit.isPressed());
+    // SmartDashboard.putBoolean("lower Limit", lowerLimit.isPressed());
+    // SmartDashboard.putBoolean("proximity sensor", sensor.get());
+
+    SmartDashboard.putNumber("encoder speed", (int) getEncoderVelocity());
     SmartDashboard.putNumber("encoder position", (int) getEncoderPosition());
   }
 

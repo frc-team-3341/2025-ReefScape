@@ -53,7 +53,7 @@ public class RobotContainer {
   // Xbox + an additional one for PC use
   private final Joystick drivingXbox = new Joystick(0);
   private final Joystick simulationJoy = new Joystick(1);
-  private final Joystick hangXbox = new Joystick(2);
+  private final Joystick hangXbox = new Joystick(0);
 
   // Chooser for testing teleop commands
   private final SendableChooser<Command> teleopCommandChooser = new SendableChooser<>();
@@ -198,11 +198,12 @@ public class RobotContainer {
   public void configureDeepHang() {
     hang = new DeepHang();
 
-    POVButton hangUp = new POVButton(hangXbox, 90);
-    POVButton hangDown = new POVButton(hangXbox, 270);
+    POVButton hangUp = new POVButton(hangXbox, 0);
+    POVButton hangDown = new POVButton(hangXbox, 180);
 
     hangUp.whileTrue(new Hang(hang, hangXbox));
     hangDown.whileTrue(new Hang(hang, hangXbox));
+
   }
 
   private void configureBindings() {
@@ -219,7 +220,7 @@ public class RobotContainer {
 
 
   public void initCommandInTeleop() {
-    swerve.setDefaultCommand(teleopCommandChooser.getSelected());
+    //swerve.setDefaultCommand(teleopCommandChooser.getSelected());
   }
 
   /**

@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DeepHang;
 
@@ -35,15 +36,17 @@ public class Hang extends Command {
   public void execute() {
     pov = joystick.getPOV();
 
-    if(pov == 90) {
-      hang.setSpeed(0.3);
+    if(pov == 0) {
+      hang.setSpeed(0.05);
     }
-    if(pov == 270) {
-      hang.setSpeed(-0.3);
+    else if(pov == 180) {
+      hang.setSpeed(-0.05);
     }
     else {
       hang.setSpeed(0);
     }
+
+    SmartDashboard.putNumber("POV", (int) pov);
   }
 
   // Called once the command ends or is interrupted.
