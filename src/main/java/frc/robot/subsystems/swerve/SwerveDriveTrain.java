@@ -39,7 +39,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    public PowerDistribution pdh = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
 
    // Create object representing swerve modules
-   private SwerveModuleIOSparkMax[] moduleIO;
+   private SwerveModuleIO[] moduleIO;
 
    // Create object that represents swerve module positions (i.e. radians and meters)
    private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
@@ -60,6 +60,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    private final StructArrayPublisher<SwerveModuleState> targetStatePublisher;
    private final StructArrayPublisher<SwerveModuleState> absStatePublisher;
    private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher;
+   StructPublisher<Pose2d> posePublisher;
 
 
    /**
@@ -72,9 +73,9 @@ public class SwerveDriveTrain extends SubsystemBase {
     * @param BR Swerve module - CAN 7 - Drive; CAN 8 - Turn; CAN 12 - BR CANCoder
     * @author Aric Volman
     */
-   public SwerveDriveTrain(Pose2d startingPoint, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BL, SwerveModuleIOSparkMax BR) {
+   public SwerveDriveTrain(Pose2d startingPoint, SwerveModuleIO FL, SwerveModuleIO FR, SwerveModuleIO BL, SwerveModuleIO BR) {
       // Assign modules to their object
-      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BL, BR };
+      this.moduleIO = new SwerveModuleIO[] { FL, FR, BL, BR };
 
       // Iterate through module positions and assign initial values
       modulePositions = SwerveUtil.setModulePositions(moduleIO);
@@ -92,6 +93,7 @@ public class SwerveDriveTrain extends SubsystemBase {
       absStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates_abs", SwerveModuleState.struct).publish();
       targetStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates_target", SwerveModuleState.struct).publish();
       chassisSpeedsPublisher = NetworkTableInstance.getDefault().getStructTopic("/ChassisSpeeds", ChassisSpeeds.struct).publish();
+      posePublisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
    }
 
    public void periodic() {
@@ -100,7 +102,10 @@ public class SwerveDriveTrain extends SubsystemBase {
 
       // Update odometry, field, and poseEstimator
       this.poseEstimator.update(this.getRotation(), this.modulePositions);
-      this.field.setRobotPose(this.getPoseFromEstimator());
+
+      Pose2d pose = this.getPoseFromEstimator();
+      this.field.setRobotPose(pose);
+      posePublisher.set(pose);
 
       // Update telemetry of each swerve module
       SwerveUtil.updateTelemetry(moduleIO);
@@ -202,7 +207,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    public SwerveModuleState[] getCanCoderStates() {
       SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
       for (int i = 0; i < states.length; i++) {
-         states[i] = this.moduleIO[i].getCanCoderState();
+         //states[i] = this.moduleIO[i].getCanCoderState();
       }
       return states;
    }
@@ -252,7 +257,7 @@ public class SwerveDriveTrain extends SubsystemBase {
     * Stops the motors of the swerve drive. Useful for stopping all sorts of Commands.
     */
    public void stopMotors() {
-      for (SwerveModuleIOSparkMax module : moduleIO) {
+      for (SwerveModuleIO module : moduleIO) {
          module.setDriveVoltage(0.0);
          module.setTurnVoltage(0.0);
       }

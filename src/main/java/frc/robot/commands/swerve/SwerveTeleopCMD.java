@@ -52,10 +52,10 @@ public class SwerveTeleopCMD extends Command {
 
    @Override
    public void execute() {
-
+      
       double xVal = -this.joystick.getRawAxis(XboxController.Axis.kLeftY.value);
       double yVal = -this.joystick.getRawAxis(XboxController.Axis.kLeftX.value);
-      double rotation = -this.joystick.getRawAxis(XboxController.Axis.kRightX.value);
+      double rotationVal = -this.joystick.getRawAxis(XboxController.Axis.kRightX.value);
       double translationRightTrigger = this.joystick.getRawAxis(XboxController.Axis.kRightTrigger.value);
       //this.robotCentric = this.joystick.getRawButtonPressed(XboxController.Button.kX.value);
 
@@ -77,7 +77,7 @@ public class SwerveTeleopCMD extends Command {
       xVal = MathUtil.applyDeadband(xVal, Constants.SwerveConstants.deadBand);
       yVal = MathUtil.applyDeadband(yVal, Constants.SwerveConstants.deadBand);
 
-      double rotationVal = MathUtil.applyDeadband(rotation, Constants.SwerveConstants.deadBand);
+      rotationVal = MathUtil.applyDeadband(rotationVal, Constants.SwerveConstants.deadBand);
 
       // Apply rate limiting to rotation
       rotationVal = this.rotationLimiter.calculate(rotationVal);

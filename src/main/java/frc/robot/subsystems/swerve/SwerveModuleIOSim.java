@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -25,6 +26,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
    // FlywheelSim is more tuneable for feedforward purposes
    private final LinearSystem<N1, N1, N1> flywheelPlant = LinearSystemId.identifyVelocitySystem(0.1261, 0.001);
+   private final LinearSystem<N2, N1, N2> turnWheelPlant = LinearSystemId.identifyPositionSystem(0.1261, 0.001);
 
    // Create drive and turn sim motors
    private final FlywheelSim driveSim = new FlywheelSim(flywheelPlant, DCMotor.getNEO(0),
@@ -34,7 +36,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
    // simulation won't work until this is fixed. Adding in null object for now, expect errors in simulation
    //private final DCMotorSim turnSim = new DCMotorSim(DCMotor.getNEO(1), ModuleConstants.turnGearRatio,
      //    0.000001);
-   private final DCMotorSim turnSim = new DCMotorSim(null, null, null);
+   private final DCMotorSim turnSim = new DCMotorSim(turnWheelPlant, DCMotor.getNEO(1));
 
    // Create PID controllers with constants
    // Note lack of feedforward
@@ -83,7 +85,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
    public void setDesiredState(SwerveModuleState state) {
 
       // Optimize state so that movement is minimized
-      state = SwerveModuleState.optimize(state, new Rotation2d(getTurnPositionInRad()));
+      state.optimize(new Rotation2d(getTurnPositionInRad()));
 
       // Cap setpoints at max speeds for safety
       state.speedMetersPerSecond = MathUtil.clamp(state.speedMetersPerSecond,
@@ -91,7 +93,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
       // Set internal state as passed-in state
       this.state = state;
-
+      
       // Set setpoint of the drive PID controller
       this.drivePID.setSetpoint(state.speedMetersPerSecond);
 
@@ -110,6 +112,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
       double turnOutput = this.turnPID.calculate(getTurnPositionInRad());
       setTurnVoltage(turnOutput);
+      
    }
 
    public SwerveModulePosition getPosition() {

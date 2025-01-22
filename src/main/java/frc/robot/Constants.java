@@ -74,7 +74,7 @@ public final class Constants {
             new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0) };
 
         // Joystick deadband for no accidental movement
-        public static final double deadBand = 0.05;
+        public static final double deadBand = 0.15;
 
         // Wheels/gears should be facing inwards when calibrating the chassis
         //public static final boolean[] moduleInverts = {false, true, false, true};
