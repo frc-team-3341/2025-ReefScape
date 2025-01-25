@@ -5,6 +5,9 @@
 package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
@@ -64,13 +67,25 @@ public class driveToTag extends Command {
 
     // Stop the robot if it's within 0.45-0.5 meters of the target
     double distanceThreshold1 = 0;
-    double distanceThreshold2 = 0.50;
+    double distanceThreshold2 = 0.3;
     if(avgDistance >= distanceThreshold1 && avgDistance <= distanceThreshold2){
       swerve.stopMotors();
       return;
     }
 
-    swerve.drive(new Translation2d(cameraPoseTargetSpace[0] * .02, cameraPoseTargetSpace[1] * .02), 90*Math.PI/180, false, false);
+    // if(swerve.getPoseFromEstimator().getX() > 0.5 ){
+    //   swerve.stopMotors();
+    //   return;
+    // }
+    ShuffleboardTab tab = Shuffleboard.getTab("Pose (x, y, z)");
+      Shuffleboard.selectTab("Pose (x, y, z)");
+      SmartDashboard.putNumber("x", cameraPoseTargetSpace[0]);
+      SmartDashboard.putNumber("y", cameraPoseTargetSpace[1]);
+      SmartDashboard.putNumber("z", cameraPoseTargetSpace[2]);
+      SmartDashboard.putNumber("TX?", LimelightHelpers.getTX("limelight-shahzhu"));
+      SmartDashboard.updateValues();
+     swerve.drive(new Translation2d(cameraPoseTargetSpace[3] * -1 * 0.02, cameraPoseTargetSpace[0] * -2), LimelightHelpers.getTX("limelight-shahzhu"), false, false);
+    //swerve.drive(new Translation2d(-0.5, -.5), 0, false, false);
   }
 
   // Called once the command ends or is interrupted.
