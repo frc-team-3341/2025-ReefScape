@@ -83,8 +83,10 @@ public class driveToTag extends Command {
       SmartDashboard.putNumber("y", cameraPoseTargetSpace[1]);
       SmartDashboard.putNumber("z", cameraPoseTargetSpace[2]);
       SmartDashboard.putNumber("TX?", LimelightHelpers.getTX("limelight-shahzhu"));
+      SmartDashboard.putNumber("AvgDistanceFromLimelight", avgDistance);
       SmartDashboard.updateValues();
-     swerve.drive(new Translation2d(cameraPoseTargetSpace[3] * -1 * 0.02, cameraPoseTargetSpace[0] * -2), LimelightHelpers.getTX("limelight-shahzhu"), false, false);
+      //LimelightHelpers.getTX("limelight-shahzhu")
+     swerve.drive(new Translation2d(cameraPoseTargetSpace[3] * -1 * 0.02, cameraPoseTargetSpace[0] * -2), 0.002 * LimelightHelpers.getTX("limelight-shahzhu"), false, false);
     //swerve.drive(new Translation2d(-0.5, -.5), 0, false, false);
   }
 
