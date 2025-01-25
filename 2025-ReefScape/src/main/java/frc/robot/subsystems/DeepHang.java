@@ -5,11 +5,15 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLimitSwitch;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -20,25 +24,41 @@ public class DeepHang extends SubsystemBase {
   /** Creates a new DeepHang. */
   SparkMax deepHang;
 
+  private double drivekP = 0.0;
+  private double drivekI = 0.0;
+  private double drivekD = 0.0;
+
+  private double drivekF = 0.0;
+
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  DigitalInput sensor;
+  public SparkClosedLoopController drivePID;
+
+  public DigitalInput sensor;
 
   private RelativeEncoder hangEncoder;
 
   public DeepHang() {
 
     deepHang = new SparkMax(22, MotorType.kBrushless); //CANID = 22
+    drivePID = deepHang.getClosedLoopController();
+    hangEncoder = deepHang.getEncoder();
+
     SparkMaxConfig config = new SparkMaxConfig();
+
+    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+    config.closedLoop.pidf(drivekP, drivekI, drivekD, drivekF);
+    config.closedLoop.outputRange(-1, 1);
+
+    config.idleMode(IdleMode.kBrake);
+
     deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     upperLimit = deepHang.getForwardLimitSwitch();
     lowerLimit = deepHang.getReverseLimitSwitch();
 
     sensor = new DigitalInput(0); //proximity sensor
-
-    hangEncoder = deepHang.getEncoder();
 
   }
 
@@ -74,7 +94,8 @@ public class DeepHang extends SubsystemBase {
     hangEncoder.setPosition(0);
   }
 
-  public void setSpeed(double speed) {
-    deepHang.set(speed);
+  public void setSpeed(double setPoint) {
+    deepHang.set(setPoint);
+    //drivePID.setReference(setPoint, ControlType.kVelocity);
   }
 }
