@@ -9,8 +9,11 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class Vision extends SubsystemBase{
 
@@ -19,7 +22,9 @@ public class Vision extends SubsystemBase{
     AprilTagFields field;
     AprilTagFieldLayout fieldLayout;
     Transform3d targetData;
-    
+    double[] array = {-0.03, 0.03};
+    XboxController cont = new XboxController(0);
+
     public Vision(PhotonCamera camera) {
         this.camera = camera;
         camera.setPipelineIndex(0);
@@ -36,21 +41,21 @@ public class Vision extends SubsystemBase{
         return false;
     }
 
-    public double getYaw() {
-        if (targetDetected()) {
-            PhotonPipelineResult result = camera.getLatestResult();
+    // public double getYaw() {
+    //     if (targetDetected()) {
+    //         PhotonPipelineResult result = camera.getLatestResult();
 
-            PhotonTrackedTarget target = result.getBestTarget();
+    //         PhotonTrackedTarget target = result.getBestTarget();
         
-            if (target != null) {
-                double yaw = target.getYaw();
+    //         if (target != null) {
+    //             double yaw = target.getYaw();
             
-                return yaw;
-            }
-        }
-        return 0.0;
+    //             return yaw;
+    //         }
+    //     }
+    //     return 0.0;
         
-    }
+    // }
 
     //gets target data such as x and y offset, rotational offset, and returns everything as a Transform3d 
     public Transform3d getTargetData() {
@@ -106,10 +111,10 @@ public class Vision extends SubsystemBase{
     public double getHorizontalDirection() {
         double direction;
         if (targetDetected()) {
-            if (getHorizontalDisplacement() < -0.05) {
+            if (getHorizontalDisplacement() < array[0]) {
                 direction = -1;
             }
-            else if (getHorizontalDisplacement() > 0.05) {
+            else if (getHorizontalDisplacement() > array[1]) {
                 direction = 1;
             }
             else direction = 0;
@@ -136,9 +141,24 @@ public class Vision extends SubsystemBase{
         return true;
     }
 
+    public void switchHorizontalSetpoint() {
+        if(cont.getLeftBumperButtonPressed()) {
+            array[0] = -0.35;
+            array[1] = -0.3;
+        }
+        else if(cont.getRightBumperButtonPressed()) {
+            array[0] = 0.3;
+            array[1] = 0.35;
+        }
+        else if(cont.getBButtonPressed()) {
+            array[0] = -0.03;
+            array[1] = 0.03;
+        }
+    }
+
 
     public boolean horizontalAtSetpoint() {
-        if (getHorizontalDisplacement() < -0.05 || getHorizontalDisplacement() > 0.05) {
+        if (getHorizontalDisplacement() < array[0] || getHorizontalDisplacement() > array[1]) {
             return false;
         }
         return true;

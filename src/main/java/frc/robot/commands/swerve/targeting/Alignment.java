@@ -26,11 +26,15 @@ public class Alignment extends Command{
 
     @Override
     public void execute() {
+      System.out.println("NEW RUN");
+      vision.switchHorizontalSetpoint();
       if (vision.targetDetected() && (!vision.rotationalAtSetpoint() || !vision.horizontalAtSetpoint())) {
         rotDirection = vision.getRotationalDirection();
         horizDirection = vision.getHorizontalDirection();
+        System.out.println("displacement: " + vision.getHorizontalDisplacement());
+        System.out.println("direction: " + horizDirection);
 
-        swerve.drive(new Translation2d(0, 0.3*horizDirection), 0.3*rotDirection, false, false);
+        swerve.drive(new Translation2d(0, 0.5*horizDirection), 0.5*rotDirection, false, false);
       }
     }
 
