@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems.swerve;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+// import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+// import com.ctre.phoenix.sensors.CANCoder;
+// import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.ctre.phoenix6.hardware.CANcoder;
+
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -48,7 +50,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     private RelativeEncoder driveEncoder;
     private RelativeEncoder turnEncoder;
 
-    private CANCoder canCoder;
+    private CANcoder canCoder;
 
     // Variables to store voltages of motors - REV stuff doesn't like getters
     private double driveVolts = 0.0;
@@ -77,11 +79,11 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
        // TIP or TODO - Put config method calls in separate Command object, call via Runnable when needed
        //    --> When needed: when a module's motor could hypothetically reboot during a match
 
-       offset = turnEncoderOffset;
+       this.offset = turnEncoderOffset;
         
-       canCoder = new CANCoder(turnCANCoderID);
-       driveSparkMax = new SparkMax(driveID, MotorType.kBrushless);
-       turnSparkMax = new SparkMax(turnID, MotorType.kBrushless);
+       this.canCoder = new CANcoder(turnCANCoderID);
+       this.driveSparkMax = new SparkMax(driveID, MotorType.kBrushless);
+       this.turnSparkMax = new SparkMax(turnID, MotorType.kBrushless);
 
        configCANCoder();
        configDriveMotor(invert);
@@ -92,26 +94,26 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
        //turnSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
        //turnSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
-       driveEncoder.setPosition(0);
+       this.driveEncoder.setPosition(0);
        
        // Offsets the position of the CANCoder via an offset and initializes the turning encoder, placed in proper scope of [-180, 180)
-       turnEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - offset));
-       state.angle = new Rotation2d(turnEncoder.getPosition());
+       this.turnEncoder.setPosition(this.canCoder.getAbsolutePosition().getValueAsDouble() - Units.degreesToRotations(this.offset));
+       state.angle = new Rotation2d(Units.rotationsToRadians(this.turnEncoder.getPosition()));
 
        this.num = num;
 
     }
 
     public void configCANCoder() {
-        canCoder.configFactoryDefault();
+        //canCoder.configFactoryDefault();
 
         // Set position of encoder to absolute mode
-        canCoder.setPositionToAbsolute();
+        //canCoder.setPositionToAbsolute();
         // Boot to absolute position
-        canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        //canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
         // Important for matching up the offset of the angle
         // NEED THIS LINE - IF NOT, THEN WRONG OFFSETS WILL BE FOUND
-        canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        //canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     }
 
     public void configDriveMotor(boolean invert) {
@@ -121,6 +123,8 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         driveEncoder = driveSparkMax.getEncoder();
         drivePID = driveSparkMax.getClosedLoopController();
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+
+        
         // Set conversion factors
         config.encoder.positionConversionFactor(ModuleConstants.drivingEncoderPositionFactor);
         config.encoder.velocityConversionFactor(ModuleConstants.drivingEncoderVelocityPositionFactor);
@@ -132,9 +136,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
                                ModuleConstants.drivekD,
                                ModuleConstants.drivekF);
         config.closedLoop.outputRange(-1, 1);
-
         config.inverted(invert);
-
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(ModuleConstants.driveCurrentLimit);
         config.voltageCompensation(12.0);
@@ -146,60 +148,59 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     public void configTurnMotor() {
         // Initialize encoder and PID controller
         SparkMaxConfig config = new SparkMaxConfig();
-        turnEncoder = turnSparkMax.getEncoder();
-        turnPID = turnSparkMax.getClosedLoopController();
+        this.turnEncoder = this.turnSparkMax.getEncoder();
+        this.turnPID = this.turnSparkMax.getClosedLoopController();
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
         // Set conversion factors
-        config.encoder.positionConversionFactor(ModuleConstants.drivingEncoderPositionFactor);
-        config.encoder.velocityConversionFactor(ModuleConstants.drivingEncoderVelocityPositionFactor);
+        config.encoder.positionConversionFactor(Units.radiansToRotations(ModuleConstants.turningEncoderPositionFactor));
+        config.encoder.velocityConversionFactor(ModuleConstants.turningEncoderVelocityFactor);
         // Derived from: https://github.com/BroncBotz3481/YAGSL-Configs/tree/main/sds/mk4i/neo
-        turnSparkMax.setInverted(true); // This works, because the MK4i is inverted
+        config.inverted(true);
 
         // Set SPARK MAX PIDF
         // More advantageous due to 1 KHz cycle (can ramp up action quicker)
         config.closedLoop.positionWrappingEnabled(true);
         config.closedLoop.positionWrappingInputRange(-Math.PI, Math.PI);
-
         config.idleMode(IdleMode.kBrake);
         config.smartCurrentLimit(ModuleConstants.driveCurrentLimit);
-
-        config.closedLoop.pidf(ModuleConstants.drivekP,
-                               ModuleConstants.drivekI,
-                               ModuleConstants.drivekD,
+        config.closedLoop.pidf(ModuleConstants.turnkP,
+                               ModuleConstants.turnkI,
+                               ModuleConstants.turnkP,
                                0);
         config.closedLoop.outputRange(-1, 1);
         
-        turnSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        this.turnSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     public double getTurnPositionInRad() {
         // Position should be already offsetted in constructor
         // Modulus places measurement of relative encoder in absolute coordinates (-180 to 180 scope)
         // Modulus is needed if the wheel is spun too much relative to the encoder's starting point
-        return MathUtil.angleModulus(turnEncoder.getPosition());
+        return MathUtil.angleModulus(Units.rotationsToRadians(turnEncoder.getPosition()));
+        //return MathUtil.angleModulus(Units.degreesToRadians(this.canCoder.getAbsolutePosition() - this.offset));
     }
 
-    public void setDesiredState(SwerveModuleState state) {
+    public void setDesiredState(SwerveModuleState targetState) {
         // Optimize state so that movement is minimized
         // Should be fine optimizing with PID strategy of -180 to 180 scope, not 0 to 360 scope
         // https://first.wpi.edu/wpilib/allwpilib/docs/release/java/src-html/edu/wpi/first/math/kinematics/SwerveModuleState.html#line.65
-        state = SwerveModuleState.optimize(state, new Rotation2d(getTurnPositionInRad()));
-
+        targetState.optimize(new Rotation2d(getTurnPositionInRad()));
+        
         // Cap setpoints at max speeds for safety
-        state.speedMetersPerSecond = MathUtil.clamp(state.speedMetersPerSecond,
+        targetState.speedMetersPerSecond = MathUtil.clamp(targetState.speedMetersPerSecond,
                 -Constants.ModuleConstants.maxFreeWheelSpeedMeters, Constants.ModuleConstants.maxFreeWheelSpeedMeters);
 
         // Set reference of drive motor's PIDF internally in SPARK MAX
         // This automagically updates at a 1 KHz rate
-        drivePID.setReference(state.speedMetersPerSecond, SparkMax.ControlType.kVelocity);
+        this.drivePID.setReference(targetState.speedMetersPerSecond, SparkMax.ControlType.kVelocity);
 
         // Set setpoint of WPILib PID controller for turning
         // The built-in position wrapping should handle any discontinuity around the -180 to 180 range if needed
-        turnPID.setReference(state.angle.getRadians(), SparkMax.ControlType.kPosition);
+        this.turnPID.setReference(targetState.angle.getRotations(), SparkMax.ControlType.kPosition);
 
         // Set internal state as passed-in state
-        this.state = state;
+        this.state = targetState;
 
     }
 
@@ -214,13 +215,19 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         return new SwerveModuleState(velocity, Rotation2d.fromRadians(rotation));
     }
 
+    public SwerveModuleState getCanCoderState(){
+        double velocity = this.driveEncoder.getVelocity();
+        double rotation = Units.rotationsToRadians(this.canCoder.getAbsolutePosition().getValueAsDouble() - Units.degreesToRotations(this.offset));
+        return new SwerveModuleState(velocity, Rotation2d.fromRadians(rotation));
+    }
+
     public void setDriveVoltage(double volts) {
         driveSparkMax.setVoltage(volts);
         this.driveVolts = volts;
     }
 
     public void setTurnVoltage(double volts) {
-        turnSparkMax.setVoltage(volts);
+        this.turnSparkMax.setVoltage(volts);
         this.turnVolts = volts;
     }
 
@@ -262,7 +269,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         SmartDashboard.putNumber("Drive Vel #" + this.num, driveEncoder.getVelocity());
 
         // NON-ESSENTIAL TELEMETRY
-        if (Constants.currentRobot.enableSwerveMotorTelemetry) {
+        if (Constants.enableSwerveMotorTelemetry) {
 
             // Show driving velocity setpoints
             SmartDashboard.putNumber("Setpoint Drive Vel #" + this.num, state.speedMetersPerSecond);
@@ -276,7 +283,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
             SmartDashboard.putNumber("Turn RPM #" + this.num, (turnEncoder.getVelocity() / 360.0) * 60.0);
             SmartDashboard.putNumber("Drive RPS #" + this.num,
                     driveEncoder.getVelocity() / Constants.ModuleConstants.drivingEncoderPositionFactor);
-            SmartDashboard.putNumber("CANCoder #" + this.num, canCoder.getAbsolutePosition());
+            SmartDashboard.putNumber("CANCoder rotation#" + this.num, canCoder.getAbsolutePosition().getValueAsDouble());
             SmartDashboard.putNumber("Drive Motor Voltage #" + this.num, driveSparkMax.getAppliedOutput());
 
             // Output of driving

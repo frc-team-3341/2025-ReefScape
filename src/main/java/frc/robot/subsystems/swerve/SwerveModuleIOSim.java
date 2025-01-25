@@ -161,7 +161,7 @@ public class SwerveModuleIOSim implements SwerveModuleIO {
 
       
       // NON-ESSENTIAL TELEMETRY
-      if (Constants.currentRobot.enableSwerveMotorTelemetry) {
+      if (Constants.enableSwerveMotorTelemetry) {
 
          SmartDashboard.putNumber("Wheel Displacement #" + this.num, getPosition().distanceMeters);
 

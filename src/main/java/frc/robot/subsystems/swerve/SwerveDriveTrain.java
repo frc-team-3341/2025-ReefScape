@@ -11,7 +11,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -29,15 +31,15 @@ import frc.util.lib.SwerveUtil;
  * 
  * @author Aric Volman
  */
-public class SwerveDrive extends SubsystemBase {
+public class SwerveDriveTrain extends SubsystemBase {
    // Create Navx
    private AHRS navx = new AHRS(NavXComType.kMXP_SPI);
 
    //Creates pdh
-   public PowerDistribution pdh = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
+   public PowerDistribution pdh = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
 
    // Create object representing swerve modules
-   private SwerveModuleIO[] moduleIO;
+   private SwerveModuleIOSparkMax[] moduleIO;
 
    // Create object that represents swerve module positions (i.e. radians and meters)
    private SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
@@ -45,14 +47,19 @@ public class SwerveDrive extends SubsystemBase {
    // Create kinematics object
    private SwerveDriveKinematics kinematics;
 
+   private ChassisSpeeds chassisSpeeds;
+
    // Create poseEstimator object
    // This can fuse Visual and Encoder odometry with different standard deviations/priorities
    private SwerveDrivePoseEstimator poseEstimator;
 
    // Add field to show robot
    private Field2d field;
-
    private Rotation2d offsetNavx = new Rotation2d();
+   private final StructArrayPublisher<SwerveModuleState> statePublisher;
+   private final StructArrayPublisher<SwerveModuleState> targetStatePublisher;
+   private final StructArrayPublisher<SwerveModuleState> absStatePublisher;
+   private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher;
 
 
    /**
@@ -65,21 +72,26 @@ public class SwerveDrive extends SubsystemBase {
     * @param BR Swerve module - CAN 7 - Drive; CAN 8 - Turn; CAN 12 - BR CANCoder
     * @author Aric Volman
     */
-   public SwerveDrive(Pose2d startingPoint, SwerveModuleIO FL, SwerveModuleIO FR, SwerveModuleIO BL, SwerveModuleIO BR) {
+   public SwerveDriveTrain(Pose2d startingPoint, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BL, SwerveModuleIOSparkMax BR) {
       // Assign modules to their object
-      this.moduleIO = new SwerveModuleIO[] { FL, FR, BL, BR };
+      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BL, BR };
 
       // Iterate through module positions and assign initial values
       modulePositions = SwerveUtil.setModulePositions(moduleIO);
 
       // Initialize all other objects
-      this.kinematics = new SwerveDriveKinematics(SwerveUtil.getModuleTranslations());
+      this.kinematics = new SwerveDriveKinematics(Constants.SwerveConstants.translations);
       // Can set any robot pose here (x, y, theta) -> Built in Kalman Filter
       // FUTURE: Seed pose with CV
       // Auto is field-oriented
-      this.poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, new Rotation2d(), this.modulePositions,
-           startingPoint);
+      this.poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, new Rotation2d(), this.modulePositions, startingPoint);
       this.field = new Field2d();
+      
+      this.chassisSpeeds =  new ChassisSpeeds(0.0, 0.0, 0.0);
+      statePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
+      absStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates_abs", SwerveModuleState.struct).publish();
+      targetStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates_target", SwerveModuleState.struct).publish();
+      chassisSpeedsPublisher = NetworkTableInstance.getDefault().getStructTopic("/ChassisSpeeds", ChassisSpeeds.struct).publish();
    }
 
    public void periodic() {
@@ -101,10 +113,12 @@ public class SwerveDrive extends SubsystemBase {
       SmartDashboard.putNumberArray("Actual States", SwerveUtil.getDoubleStates(getActualStates()));
       SmartDashboard.putNumberArray("Setpoint States", SwerveUtil.getDoubleStates(getSetpointStates()));
       SmartDashboard.putNumber("Robot Rotation", getPoseFromEstimator().getRotation().getRadians());
-
-   
       SmartDashboard.putNumber("Angle", getHeading());
 
+      targetStatePublisher.set(getSetpointStates());
+      statePublisher.set(getActualStates());
+      absStatePublisher.set(getCanCoderStates());
+      chassisSpeedsPublisher.set(this.chassisSpeeds);
    }
 
    public void simulationPeriodic() {
@@ -124,17 +138,16 @@ public class SwerveDrive extends SubsystemBase {
     */
    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
 
-      ChassisSpeeds speeds = fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-                  this.getRotation())
+      this.chassisSpeeds = fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, this.getRotation())
             : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
-      speeds = SwerveUtil.discretize(speeds, -4.0);
+            this.chassisSpeeds = SwerveUtil.discretize(this.chassisSpeeds, -4.0);
 
-      SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(speeds);
+      SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(this.chassisSpeeds);
 
       // MUST USE SECOND TYPE OF METHOD
-      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, speeds,
+      SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, this.chassisSpeeds,
             Constants.SwerveConstants.maxWheelLinearVelocityMeters,
             Constants.SwerveConstants.maxChassisTranslationalSpeed,
             Constants.SwerveConstants.maxChassisAngularVelocity);
@@ -142,9 +155,6 @@ public class SwerveDrive extends SubsystemBase {
       for (int i = 0; i < swerveModuleStates.length; i++) {
          this.moduleIO[i].setDesiredState(swerveModuleStates[i]);
       }
-
-      
-      
 
    }
 
@@ -172,11 +182,9 @@ public class SwerveDrive extends SubsystemBase {
     */
    public SwerveModuleState[] getSetpointStates() {
       SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
-
       for (int i = 0; i < states.length; i++) {
          states[i] = this.moduleIO[i].getDesiredState();
       }
-
       return states;
    }
 
@@ -185,11 +193,17 @@ public class SwerveDrive extends SubsystemBase {
     */
    public SwerveModuleState[] getActualStates() {
       SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
-
       for (int i = 0; i < states.length; i++) {
          states[i] = this.moduleIO[i].getActualModuleState();
       }
+      return states;
+   }
 
+   public SwerveModuleState[] getCanCoderStates() {
+      SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
+      for (int i = 0; i < states.length; i++) {
+         states[i] = this.moduleIO[i].getCanCoderState();
+      }
       return states;
    }
 
@@ -238,7 +252,7 @@ public class SwerveDrive extends SubsystemBase {
     * Stops the motors of the swerve drive. Useful for stopping all sorts of Commands.
     */
    public void stopMotors() {
-      for (SwerveModuleIO module : moduleIO) {
+      for (SwerveModuleIOSparkMax module : moduleIO) {
          module.setDriveVoltage(0.0);
          module.setTurnVoltage(0.0);
       }
