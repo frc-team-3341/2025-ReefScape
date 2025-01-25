@@ -27,6 +27,7 @@ public class driveToTag extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     // Check if the Limelight sees the tag 
     double tx = LimelightHelpers.getTX("limelight-shahzhu");
     double ty = LimelightHelpers.getTY("limelight-shahzhu");
@@ -38,9 +39,14 @@ public class driveToTag extends Command {
     }
 
     double avgDistance = -1;
+
+    // Calculate the angular velocity based on Limelight aiming (proportional control) with deadband
+    double rotationDeadband = 5.0; //Degrees
+    double rot = 0.0;
+    if(Math.abs(tx) > rotationDeadband){
+      rot = limelight_aim_proportional();
+    }
     
-    // Calculate the angular velocity based on Limelight aiming (proportional control)
-    double rot = limelight_aim_proportional();
 
     // Calculate the forward speed based on Limelight ranging (proportional control)
     double xSpeed = limelight_range_proportional();
