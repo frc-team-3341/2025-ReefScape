@@ -4,11 +4,13 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
-
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.swerve.CrabDrive;
 import frc.robot.commands.swerve.SwerveTeleop;
 import frc.robot.commands.swerve.TestFourModules;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.swerve.SwerveDrive;
 import frc.robot.subsystems.swerve.SwerveModuleIO;
 import frc.robot.subsystems.swerve.SwerveModuleIOSim;
@@ -49,8 +51,11 @@ public class RobotContainer {
   // ---------------------- END OF CONFIG SECTION --------------------------
 
   // Xbox + an additional one for PC use
-  private final Joystick drivingXbox = new Joystick(0);
-  private final Joystick simulationJoy = new Joystick(1);
+  private final Joystick drivingXbox = new Joystick(10);
+  private final Joystick simulationJoy = new Joystick(11);
+  private final Joystick elevatorJoystick = new Joystick(0);
+
+  Elevator elevator = new Elevator(elevatorJoystick);
 
   // Chooser for testing teleop commands
   private final SendableChooser<Command> teleopCommandChooser = new SendableChooser<>();
@@ -190,16 +195,27 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+
+    // Trigger A = new Trigger(Elevator::x==0)
+    //     .onTrue(new stopElevator(Elevator));
+
+
+
+    //elevatorJoystick.getRawButton(0).onTrue(elevator.stopElevator());
+    //Trigger triggerA = new Trigger(elevatorJoystick.getRawButtonPressed(1)).onTrue(new stopElevator(Elevator));
+    Trigger trigger = new Trigger(CommandScheduler.getInstance().getDefaultButtonLoop(), () -> elevatorJoystick.getRawButton(1)).onTrue(elevator.stopElevator());
   }
 
   public Command getAutonomousCommand() {
     return null;
     
   }
-
+  
+  //new Trigger(joystick.getRawButtonPressed(0)::get).onTrue(Commands.runOnce(() -> motorE.set(0)));
 
   public void initCommandInTeleop() {
     swerve.setDefaultCommand(teleopCommandChooser.getSelected());
+
   }
 
   /**
