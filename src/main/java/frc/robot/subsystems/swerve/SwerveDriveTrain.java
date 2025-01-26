@@ -126,6 +126,10 @@ public class SwerveDriveTrain extends SubsystemBase {
       chassisSpeedsPublisher.set(this.chassisSpeeds);
    }
 
+   public void addVisionData(Pose2d pose) {
+      poseEstimator.addVisionMeasurement(pose, getHeading());
+   }
+
    public void simulationPeriodic() {
       // Add simulation! Yes, with the Util class, it's that easy!
       // WARNING: This doesn't use the Navx, just the states of the modules

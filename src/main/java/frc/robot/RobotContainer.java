@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
 import frc.robot.subsystems.BallShooter;
@@ -30,6 +31,7 @@ public class RobotContainer {
   private final Joystick drivingXbox = new Joystick(0);
   XboxController xbox = new XboxController(1);
   BallShooter shooter = new BallShooter();
+  CommandXboxController commandXboxController = new CommandXboxController(0);
   EventLoop m_loop = new EventLoop();
   //private final SendableChooser<Command> autoCommandChooser = new SendableChooser<>();
 
@@ -71,6 +73,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    commandXboxController.a().onTrue(shooter.stopMotors());
+    commandXboxController.b().onTrue(shooter.runMotors());
   }
 
   public Command getAutonomousCommand() {

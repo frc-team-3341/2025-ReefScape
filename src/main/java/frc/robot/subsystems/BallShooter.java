@@ -48,6 +48,12 @@ public class BallShooter extends SubsystemBase {
     m_flywheel.setSelectedSensorPosition(0, 0, 10);
   }
 
+  public Command runMotors() {
+    return this.runOnce(() -> {
+      m_flywheel.set(200);
+    })
+  }
+
   public Command stopMotors() {
     return this.runOnce(() -> {
       m_flywheel.set(0); 
