@@ -25,11 +25,10 @@ public class LongitudinalAlignment extends Command {
 
     @Override
     public void execute() { 
-        if (vision.targetDetected() && vision.getLongitudinalDisplacement() > toleranceArray[0]) {
+        if (vision.targetDetected() && (vision.getLongitudinalDisplacement() > toleranceArray[0])) {
+            System.out.println(vision.getLongitudinalDisplacement());
             swerve.drive(new Translation2d(0.5, 0), 0, false, false); 
         }
-
-        else isAligned = true;
     }
 
     @Override
@@ -42,11 +41,9 @@ public class LongitudinalAlignment extends Command {
     @Override
     public boolean isFinished() {
         if (vision.getLongitudinalDisplacement() <= toleranceArray[0]) {
-            swerve.drive(new Translation2d(0, 0), 0, false, false);
-
-            swerve.stopMotors();
-
+            System.out.println("hi fellow sigma");
             return true;
+
         }
         return false;
     }

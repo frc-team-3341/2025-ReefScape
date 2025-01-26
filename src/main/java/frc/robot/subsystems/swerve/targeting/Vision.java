@@ -1,4 +1,6 @@
 package frc.robot.subsystems.swerve.targeting;
+import java.util.ArrayList;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -19,11 +21,16 @@ public class Vision extends SubsystemBase{
 
     PhotonCamera camera;
     PhotonPoseEstimator poseEstimator;
+
     AprilTagFields field;
     AprilTagFieldLayout fieldLayout;
     Transform3d targetData;
+
     double[] array = {-0.03, 0.03};
     XboxController cont = new XboxController(0);
+
+    ArrayList<Double> horizVals = new ArrayList<Double>();
+    ArrayList<Double> rotVals = new ArrayList<Double>();
 
     public Vision(PhotonCamera camera) {
         this.camera = camera;
@@ -108,6 +115,32 @@ public class Vision extends SubsystemBase{
         return 0.0;
     }
 
+    // public double getHorizontalDirection() {
+    //     double direction;
+    //     if (targetDetected()) {
+    //         if (getHorizontalDisplacement() < array[0]) {
+    //             if(getZAngle() > 182) {
+    //                 direction = 1;
+    //             }
+    //             else { 
+    //                 direction = -1;
+    //             }
+    //         }
+    //         else if (getHorizontalDisplacement() > array[1]) {
+    //             if (getZAngle() < 178) {
+    //                 direction = -1;
+    //             }
+    //             else {
+    //                 direction = 1;
+    //             }
+    //         }
+    //         else direction = 0;
+
+    //         return direction;
+    //     }
+    //     return 0.0;
+    // }
+
     public double getHorizontalDirection() {
         double direction;
         if (targetDetected()) {
@@ -144,7 +177,7 @@ public class Vision extends SubsystemBase{
     public void switchHorizontalSetpoint() {
         if(cont.getLeftBumperButtonPressed()) {
             array[0] = -0.35;
-            array[1] = -0.3;
+            array[1] = -0.27;
         }
         else if(cont.getRightBumperButtonPressed()) {
             array[0] = 0.3;
@@ -164,14 +197,26 @@ public class Vision extends SubsystemBase{
         return true;
     }
 
+    public double getLastHorizPosition() {
+        return horizVals.get(0);
+    }
+
+    public double getLastRotAngle() {
+        return rotVals.get(0);
+    }
+
     @Override
     public void periodic() {
         //update targetData with current info
         targetData = getTargetData();
+        if (targetDetected()) {
+            horizVals.add(0, getHorizontalDisplacement());
+            rotVals.add(0, getZAngle());
+        }
 
         //output values to SmartDashboard/Shuffleboard
         // SmartDashboard.putBoolean("Target Detected", targetDetected());
-        // SmartDashboard.putNumber("Yaw Angle", getYaw());
+        // // SmartDashboard.putNumber("Yaw Angle", getYaw());
         // SmartDashboard.putNumber("Z Angle", getZAngle());
 
         // SmartDashboard.putNumber("Horizontal Displacement", getHorizontalDisplacement());

@@ -1,5 +1,7 @@
 package frc.robot.commands.swerve.targeting;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swerve.SwerveDriveTrain;
@@ -11,6 +13,8 @@ public class Alignment extends Command{
 
     double rotDirection;
     double horizDirection;
+    double lHorizDirection;
+    double lRotDirection;
 
     public Alignment(SwerveDriveTrain swerve, Vision vision) {
         this.vision = vision;
@@ -26,15 +30,29 @@ public class Alignment extends Command{
 
     @Override
     public void execute() {
-      System.out.println("NEW RUN");
       vision.switchHorizontalSetpoint();
       if (vision.targetDetected() && (!vision.rotationalAtSetpoint() || !vision.horizontalAtSetpoint())) {
         rotDirection = vision.getRotationalDirection();
         horizDirection = vision.getHorizontalDirection();
-        System.out.println("displacement: " + vision.getHorizontalDisplacement());
-        System.out.println("direction: " + horizDirection);
 
         swerve.drive(new Translation2d(0, 0.5*horizDirection), 0.5*rotDirection, false, false);
+      }
+      else if (!vision.targetDetected() && vision.getLastHorizPosition() != 0) {
+        if (vision.getLastHorizPosition() < 0) {
+            lHorizDirection = -1;
+        }
+        else if (vision.getLastHorizPosition() > 0) {
+            lHorizDirection = 1;
+        }
+
+        if (vision.getLastRotAngle() < 178) {
+            lRotDirection = 1;
+        }
+        else if (vision.getLastRotAngle() > 182) {
+            lRotDirection = -1;
+        }
+        
+        swerve.drive(new Translation2d(0, 0.2*lHorizDirection), 0.2*lRotDirection, false, false);
       }
     }
 
@@ -49,10 +67,6 @@ public class Alignment extends Command{
     public boolean isFinished() {
         if (vision.horizontalAtSetpoint() && vision.rotationalAtSetpoint()) {
 
-            swerve.drive(new Translation2d(0, 0), 0, false, false);
-
-            swerve.stopMotors(); 
-            
             return true;
         }
         return false;
