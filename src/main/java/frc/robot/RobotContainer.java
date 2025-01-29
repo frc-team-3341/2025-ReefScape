@@ -9,7 +9,6 @@ import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
 import frc.robot.commands.swerve.targeting.Alignment;
 import frc.robot.commands.swerve.targeting.LongitudinalAlignment;
-import frc.robot.commands.swerve.targeting.Sigma;
 import frc.robot.subsystems.swerve.SwerveDriveTrain;
 import frc.robot.subsystems.swerve.targeting.Vision;
 
@@ -48,7 +47,7 @@ public class RobotContainer {
   private final Alignment align;
   private final LongitudinalAlignment longAlignment;
   private final Vision vision;
-  private final Sigma sigma;
+
   private final PhotonCamera cam = new PhotonCamera("camera");
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
@@ -60,7 +59,6 @@ public class RobotContainer {
     vision = new Vision(cam);
     longAlignment = new LongitudinalAlignment(swerveDriveTrain, vision);
     align = new Alignment(swerveDriveTrain, vision);
-    sigma = new Sigma(swerveDriveTrain, vision);
     JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
     JoystickButton longAlignButton = new JoystickButton(drivingXbox, XboxController.Button.kX.value);
 
@@ -73,7 +71,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return sigma;
+    return null;
     
   }
 
