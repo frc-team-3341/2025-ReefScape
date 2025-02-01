@@ -205,6 +205,15 @@ public class Vision extends SubsystemBase{
         return rotVals.get(0);
     }
 
+    public boolean joystickHeld() {
+        if (Math.abs(cont.getRawAxis(0)) > 0.1 ||  
+         Math.abs(cont.getRawAxis(1)) > 0.1 || 
+         Math.abs(cont.getRawAxis(4)) > 0.1 ) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void periodic() {
         //update targetData with current info
@@ -213,6 +222,14 @@ public class Vision extends SubsystemBase{
             horizVals.add(0, getHorizontalDisplacement());
             rotVals.add(0, getZAngle());
         }
+
+        SmartDashboard.putNumber("axis val", cont.getRawAxis(0));
+        SmartDashboard.putNumber("axis val 2", cont.getRawAxis(1));
+        SmartDashboard.putNumber("axis val 3", cont.getRawAxis(4));
+        SmartDashboard.putNumber("axis val 4", cont.getRawAxis(5));
+
+
+
 
         //output values to SmartDashboard/Shuffleboard
         // SmartDashboard.putBoolean("Target Detected", targetDetected());

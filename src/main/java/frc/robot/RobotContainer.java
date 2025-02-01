@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
@@ -13,6 +14,8 @@ import frc.robot.subsystems.swerve.SwerveDriveTrain;
 import frc.robot.subsystems.swerve.targeting.Vision;
 
 import org.photonvision.PhotonCamera;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -62,7 +65,7 @@ public class RobotContainer {
     JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
     JoystickButton longAlignButton = new JoystickButton(drivingXbox, XboxController.Button.kX.value);
 
-    alignButton.toggleOnTrue(new SequentialCommandGroup(align));
+    alignButton.toggleOnTrue(align);
     this.configureBindings();
   }
 
@@ -71,7 +74,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    return swerveTeleopCMD;
     
   }
 
