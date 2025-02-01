@@ -20,12 +20,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ModuleConstants;
 
 public class DeepHang extends SubsystemBase {
   /** Creates a new DeepHang. */
   SparkMax deepHang;
 
-  private double hangkP = 0.0;
+  private double hangkP = 0.1; //initial test value
   private double hangkI = 0.0;
   private double hangkD = 0.0;
 
@@ -55,18 +56,22 @@ public class DeepHang extends SubsystemBase {
     SparkMaxConfig config = new SparkMaxConfig();
 
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+
+    // Set conversion factors
+    config.encoder.positionConversionFactor(ModuleConstants.drivingEncoderPositionFactor);
+    config.encoder.velocityConversionFactor(ModuleConstants.drivingEncoderVelocityPositionFactor);
+  
     config.closedLoop.pidf(hangkP, hangkI, hangkD, hangkF);
     config.closedLoop.outputRange(-1, 1);
 
     config.idleMode(IdleMode.kBrake);
-
-    deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     upperLimit = deepHang.getForwardLimitSwitch();
     lowerLimit = deepHang.getReverseLimitSwitch();
 
     sensor = new DigitalInput(0); //proximity sensor
 
+    deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   public double getEncoderPosition() {
@@ -95,16 +100,24 @@ public class DeepHang extends SubsystemBase {
 
     SmartDashboard.putNumber("encoder speed", (int) getEncoderVelocity());
     SmartDashboard.putNumber("encoder position", (int) getEncoderPosition());
+    SmartDashboard.putNumber("hang kP", hangkP);
+    SmartDashboard.putNumber("hang kI", hangkI);
+    SmartDashboard.putNumber("hang kD", hangkD);
+    SmartDashboard.putNumber("hang kF", hangkF);
+    SmartDashboard.putNumber("Encoder Position", getEncoderPosition());
+    SmartDashboard.putNumber("Encoder Velocity", getEncoderVelocity());
+
   }
 
   public void resetEncoder() {
     hangEncoder.setPosition(0);
   }
-  
+
   public void setSpeed(double setPoint) {
-    deepHang.set(setPoint);
-    //hangPID.setReference(setPoint, ControlType.kVelocity);
+    hangPID.setReference(setPoint, ControlType.kVelocity);
+    // deepHang.set(setPoint);
   }
+
 
   public Command fwd() {
     return this.runOnce(() -> {

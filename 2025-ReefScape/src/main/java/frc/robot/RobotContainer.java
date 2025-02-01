@@ -202,7 +202,7 @@ public class RobotContainer {
 
     hangUp.whileTrue(hang.fwd());
     hangUp.whileFalse(hang.reset());
-
+    
     hangDown.whileTrue(hang.back());
     hangDown.whileFalse(hang.reset());
   }
