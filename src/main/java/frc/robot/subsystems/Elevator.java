@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Elevator;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
@@ -30,24 +31,28 @@ public class Elevator extends SubsystemBase {
   final SparkMax motorE = new SparkMax(20, MotorType.kBrushless);
   SparkMaxConfig config = new SparkMaxConfig();
   SparkAbsoluteEncoder abs_Encoder;
-  Joystick joystick;
+  CommandXboxController controller;
+
+  double input;
+  double currentPos;
+
   double maxHeight = 52;
     double RPI = 20;
     double max = 100000;
     double min = -100000;
   /** Creates a new ClimbTeleop. */
-  public Elevator(Joystick joystick) {
-    this.joystick = joystick;
+  public Elevator(CommandXboxController elevatorController) {
+    controller = elevatorController;
     this.abs_Encoder = motorE.getAbsoluteEncoder();
-    double currentPos = abs_Encoder.getPosition();
     motorE.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
   
  //command to stop the motor
     public Command stopElevator() {
         return this.runOnce(() -> motorE.set(0));
+        
     }
-
+    
   //resets encoders
   public void initialize(){
       //abs_Encoder.
@@ -61,18 +66,46 @@ public class Elevator extends SubsystemBase {
   public void periodic(){
     
    
-    double input = joystick.getY();
-    double currentPos = abs_Encoder.getPosition();
+    input = controller.getRightY();
+    currentPos = abs_Encoder.getPosition();
 
-    if(currentPos < max && input <=  -.2 ||
-    currentPos > min && input > .2){
-      motorE.set(input * .3);
-    }
-    // if(joystick.getRawButtonPressed(0)) {
-    //     motorE.set(0);
     
+        motorE.set(0);
+     
+  }
 
-   
+  public Command upElevator() {
+
+    return this.runOnce(()->{
+      if ((currentPos > min) && (input > 0.2)) {
+        motorE.set(input *0.3);
+      }     
+    });
+  }
+    public Command downElevator() {
+
+      return this.runOnce(()->{
+        if ((currentPos < max) && (input <= -0.2)) {
+          motorE.set(input *0.3);
+        }     
+      });
+  }
+  public Command upPovElevator() {
+
+    return this.runOnce(()->{
+      if (currentPos > min){
+        motorE.set(0.3);
+      }     
+    });
+  }
+    public Command downPovElevator() {
+
+      return this.runOnce(()->{
+        
+          motorE.set(0.3);
+            
+      });
+      
   }
   //SmartDashboard.putNumber("Current position in ticks",currentPos);
   //SmartDashboard.putBoolean("Forward limit switch value", motorE.getSensorCollection().isFwdLimitSwitchClosed());
