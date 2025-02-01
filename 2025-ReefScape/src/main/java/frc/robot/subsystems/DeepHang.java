@@ -18,37 +18,44 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DeepHang extends SubsystemBase {
   /** Creates a new DeepHang. */
   SparkMax deepHang;
 
-  private double drivekP = 0.0;
-  private double drivekI = 0.0;
-  private double drivekD = 0.0;
+  private double hangkP = 0.0;
+  private double hangkI = 0.0;
+  private double hangkD = 0.0;
 
-  private double drivekF = 0.0;
+  private double hangkF = 0.0;
 
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  public SparkClosedLoopController drivePID;
+  public SparkClosedLoopController hangPID;
 
   public DigitalInput sensor;
+  
+  //2 limit switches
+  //1 induction sensor -- 
+  //hit one of the poles closest to hang mech
+  //to help us align the robot.
+  //when switch is on, metal is close to sensor
 
   private RelativeEncoder hangEncoder;
 
   public DeepHang() {
 
     deepHang = new SparkMax(22, MotorType.kBrushless); //CANID = 22
-    drivePID = deepHang.getClosedLoopController();
+    hangPID = deepHang.getClosedLoopController();
     hangEncoder = deepHang.getEncoder();
 
     SparkMaxConfig config = new SparkMaxConfig();
 
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-    config.closedLoop.pidf(drivekP, drivekI, drivekD, drivekF);
+    config.closedLoop.pidf(hangkP, hangkI, hangkD, hangkF);
     config.closedLoop.outputRange(-1, 1);
 
     config.idleMode(IdleMode.kBrake);
@@ -96,6 +103,24 @@ public class DeepHang extends SubsystemBase {
 
   public void setSpeed(double setPoint) {
     deepHang.set(setPoint);
-    //drivePID.setReference(setPoint, ControlType.kVelocity);
+    //hangPID.setReference(setPoint, ControlType.kVelocity);
+  }
+
+  public Command fwd() {
+    return this.runOnce(() -> {
+      this.setSpeed(0.05);
+    });
+  }
+
+  public Command back() {
+    return this.runOnce(() -> {
+      this.setSpeed(-0.05);
+    });
+  }
+
+  public Command reset() {
+    return this.runOnce(() -> {
+      this.setSpeed(0);
+    });
   }
 }

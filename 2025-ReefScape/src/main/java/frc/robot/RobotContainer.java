@@ -201,9 +201,11 @@ public class RobotContainer {
     POVButton hangUp = new POVButton(hangXbox, 0);
     POVButton hangDown = new POVButton(hangXbox, 180);
 
-    hangUp.whileTrue(new Hang(hang, hangXbox));
-    hangDown.whileTrue(new Hang(hang, hangXbox));
+    hangUp.whileTrue(hang.fwd());
+    hangDown.whileTrue(hang.reset());
 
+    hangUp.whileTrue(hang.back());
+    hangDown.whileTrue(hang.reset());
   }
 
   private void configureBindings() {
