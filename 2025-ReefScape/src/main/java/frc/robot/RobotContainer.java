@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.Hang;
 import frc.robot.commands.swerve.CrabDrive;
 import frc.robot.commands.swerve.SwerveTeleop;
 import frc.robot.commands.swerve.TestFourModules;
@@ -202,10 +201,10 @@ public class RobotContainer {
     POVButton hangDown = new POVButton(hangXbox, 180);
 
     hangUp.whileTrue(hang.fwd());
-    hangDown.whileTrue(hang.reset());
+    hangUp.whileFalse(hang.reset());
 
-    hangUp.whileTrue(hang.back());
-    hangDown.whileTrue(hang.reset());
+    hangDown.whileTrue(hang.back());
+    hangDown.whileFalse(hang.reset());
   }
 
   private void configureBindings() {

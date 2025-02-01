@@ -100,7 +100,7 @@ public class DeepHang extends SubsystemBase {
   public void resetEncoder() {
     hangEncoder.setPosition(0);
   }
-
+  
   public void setSpeed(double setPoint) {
     deepHang.set(setPoint);
     //hangPID.setReference(setPoint, ControlType.kVelocity);
