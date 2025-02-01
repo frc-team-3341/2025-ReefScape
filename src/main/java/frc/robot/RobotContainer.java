@@ -47,13 +47,10 @@ private final CommandJoystick joystick = new CommandJoystick(0);
     this.configureBindings();
   }
 
-
   private void configureBindings() {
     joystick.button(4).onTrue(coralManipulator.stopCoral());
     joystick.button(5).onTrue(coralManipulator.intakeCoral());
     joystick.button(6).onTrue(coralManipulator.releaseCoral());
-
-
   }
 
   public Command getAutonomousCommand() {
