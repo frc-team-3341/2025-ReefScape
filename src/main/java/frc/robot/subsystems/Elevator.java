@@ -67,11 +67,8 @@ public class Elevator extends SubsystemBase {
     
    
     input = controller.getRightY();
-    currentPos = abs_Encoder.getPosition();
-
-    
-        motorE.set(0);
-     
+    currentPos = abs_Encoder.getPosition();     
+    SmartDashboard.putNumber("Current position in ticks",currentPos);
   }
 
   public Command upElevator() {
@@ -79,6 +76,7 @@ public class Elevator extends SubsystemBase {
     return this.runOnce(()->{
       if ((currentPos > min) && (input > 0.2)) {
         motorE.set(input *0.3);
+        System.out.println("down");
       }     
     });
   }
@@ -87,27 +85,30 @@ public class Elevator extends SubsystemBase {
       return this.runOnce(()->{
         if ((currentPos < max) && (input <= -0.2)) {
           motorE.set(input *0.3);
+          System.out.println("down");
         }     
+
       });
   }
   public Command upPovElevator() {
 
     return this.runOnce(()->{
-      if (currentPos > min){
+      // if (currentPos > min){
         motorE.set(0.3);
-      }     
+      // }     
     });
   }
     public Command downPovElevator() {
 
       return this.runOnce(()->{
-        
-          motorE.set(0.3);
-            
+        // if (currentPos < max) {
+          motorE.set(-0.3);
+        // }     
       });
       
   }
-  //SmartDashboard.putNumber("Current position in ticks",currentPos);
+  
+  
   //SmartDashboard.putBoolean("Forward limit switch value", motorE.getSensorCollection().isFwdLimitSwitchClosed());
   //SmartDashboard.putBoolean("Reverse limit switch value", motorE.getSensorCollection().isRevLimitSwitchClosed());   
     }

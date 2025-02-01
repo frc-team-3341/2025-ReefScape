@@ -50,13 +50,16 @@ private final CommandXboxController elevatorController = new CommandXboxControll
 
 
   private void configureBindings() {
-    elevatorController.b().onTrue(elevator.stopElevator());
-    elevatorController.povUp().whileTrue(elevator.upPovElevator());
-    elevatorController.povUp().whileFalse(elevator.stopElevator());
+    // elevatorController.b().onTrue(elevator.stopElevator());
+    // elevatorController.povUp().whileTrue(elevator.upPovElevator());
+    // elevatorController.povUp().whileFalse(elevator.stopElevator());
     
-    elevatorController.povDown().whileTrue(elevator.downPovElevator());
-    elevatorController.povDown().whileFalse(elevator.stopElevator());
- 
+    // elevatorController.povDown().whileTrue(elevator.downPovElevator());
+    // elevatorController.povDown().whileFalse(elevator.stopElevator());
+    
+    elevatorController.axisGreaterThan(5, 0.1).whileTrue(elevator.upElevator());
+    elevatorController.axisLessThan(5, 0.1).and(elevatorController.axisGreaterThan(5, -0.1)).whileTrue(elevator.stopElevator());
+    elevatorController.axisLessThan(5, -0.1).whileTrue(elevator.downElevator());
   }
 
 
