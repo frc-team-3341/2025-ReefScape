@@ -35,7 +35,7 @@ public class DeepHang extends SubsystemBase {
   //public SparkClosedLoopController hangPID;
 
   public DigitalInput input;
-  
+
   //2 limit switches
   //1 induction sensor -- 
   //hit one of the poles closest to hang mech
@@ -54,10 +54,6 @@ public class DeepHang extends SubsystemBase {
 
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
-    // Set conversion factors
-    //config.encoder.positionConversionFactor(ModuleConstants.drivingEncoderPositionFactor);
-    //config.encoder.velocityConversionFactor(ModuleConstants.drivingEncoderVelocityPositionFactor);
-  
     //config.closedLoop.pidf(hangkP, hangkI, hangkD, hangkF);
     //config.closedLoop.outputRange(-1, 1);
 
@@ -76,11 +72,23 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getEncoderVelocity() {
-    return hangEncoder.getVelocity();
+    return hangEncoder.getVelocity() / 60; //in rotations per second
   }
 
-  public double getHeight() {
+  public double getLinearPosition() {
     return getEncoderPosition() * 0.2; //in inches
+  }
+
+  public double getLinearVelocity() {
+    return getEncoderVelocity() * 0.2; //in inches per second
+  }
+
+  public double getVoltage() {
+    return deepHang.getAppliedOutput(); //in volts (%)
+  }
+
+  public double getCurrent() {
+    return deepHang.getOutputCurrent(); //in amps
   }
 
   @Override
@@ -88,19 +96,27 @@ public class DeepHang extends SubsystemBase {
     // This method will be called once per scheduler run
 
     if(lowerLimit.isPressed()) {
+      setSpeed(0);
       hangEncoder.setPosition(0);
     }
 
-    SmartDashboard.putNumber("Encoder Speed", (int) getEncoderVelocity());
-    SmartDashboard.putNumber("Encoder Position", (int) getEncoderPosition());
+    if(upperLimit.isPressed()) {
+      setSpeed(0);
+    }
+
     SmartDashboard.putNumber("Encoder Position", getEncoderPosition());
     SmartDashboard.putNumber("Encoder Velocity", getEncoderVelocity());
 
-    SmartDashboard.putNumber("Height (in)", getHeight());
+    SmartDashboard.putNumber("Linear Position", getLinearPosition());
+    SmartDashboard.putNumber("Linear Velocity", getLinearVelocity());
 
-    SmartDashboard.putBoolean("Proximity Sensor", input.get());
-    SmartDashboard.putBoolean("Upper Limit is Pressed", upperLimit.isPressed());
-    SmartDashboard.putBoolean("Lower Limit is Pressed", lowerLimit.isPressed());
+    SmartDashboard.putNumber("Voltage", getVoltage());
+    SmartDashboard.putNumber("Output Current", getCurrent());
+
+    //SmartDashboard.putBoolean("Proximity Sensor", input.get());
+
+    //SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
+    //SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
 
   }
 
@@ -111,7 +127,6 @@ public class DeepHang extends SubsystemBase {
   public void setSpeed(double setPoint) {
     deepHang.set(setPoint);
   }
-
 
   public Command fwd() {
     return this.runOnce(() -> {
