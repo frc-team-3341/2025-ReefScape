@@ -1,7 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.common;
+// import org.photonvision.common;
 
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -133,10 +133,8 @@ public class SwerveDriveTrain extends SubsystemBase {
       visionEst.ifPresent(
                est -> {
                   // Change our trust in the measurement based on the tags we can see
-                  var estStdDevs = vision.
-
-                  drivetrain.addVisionMeasurement(
-                           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                  poseEstimator.addVisionMeasurement(
+                           est.estimatedPose.toPose2d(), est.timestampSeconds); //TODO add visionStandard deviviation
                });
    }
 
