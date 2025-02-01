@@ -16,7 +16,10 @@ import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 
 public class RobotContainer {
@@ -26,7 +29,7 @@ public class RobotContainer {
   // Defines starting pose of robot
   // TODO - Please remove this in future if developing for AprilTags
   Pose2d startpose = new Pose2d(new Translation2d(0, 0), new Rotation2d());
-  // add start pose if needed
+  
   // ---------------------- END OF CONFIG SECTION --------------------------
 
   // Xbox + an additional one for PC use
@@ -46,7 +49,6 @@ public class RobotContainer {
 
   private final Alignment align;
   private final Vision vision;
-  private final PhotonCamera cam = new PhotonCamera("camera");
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
 
@@ -54,7 +56,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
-    vision = new Vision(cam);
+    vision = new Vision();
     align = new Alignment(swerveDriveTrain, vision);
     JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
     alignButton.toggleOnTrue(align);

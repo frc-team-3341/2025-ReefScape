@@ -1,5 +1,8 @@
 package frc.robot.subsystems.swerve;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.common;
+
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.swerve.targeting.Vision;
 import frc.util.lib.SwerveUtil;
 
 /**
@@ -61,7 +65,9 @@ public class SwerveDriveTrain extends SubsystemBase {
    private final StructArrayPublisher<SwerveModuleState> absStatePublisher;
    private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher;
 
-
+   // PhotonVision Camera
+   private Vision vision = new Vision();
+   private Pose2d pose;
    /**
     * Creates a new SwerveDrive object. Intended to work both with real modules and
     * simulation.
@@ -87,6 +93,8 @@ public class SwerveDriveTrain extends SubsystemBase {
       this.poseEstimator = new SwerveDrivePoseEstimator(this.kinematics, new Rotation2d(), this.modulePositions, startingPoint);
       this.field = new Field2d();
       
+      this.pose = startingPoint;
+
       this.chassisSpeeds =  new ChassisSpeeds(0.0, 0.0, 0.0);
       statePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
       absStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveStates_abs", SwerveModuleState.struct).publish();
@@ -119,6 +127,17 @@ public class SwerveDriveTrain extends SubsystemBase {
       statePublisher.set(getActualStates());
       absStatePublisher.set(getCanCoderStates());
       chassisSpeedsPublisher.set(this.chassisSpeeds);
+
+      // Correct pose estimate with vision measurements
+      var visionEst = vision.getEstimatedGlobalPose(this.pose);
+      visionEst.ifPresent(
+               est -> {
+                  // Change our trust in the measurement based on the tags we can see
+                  var estStdDevs = vision.
+
+                  drivetrain.addVisionMeasurement(
+                           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+               });
    }
 
    public void simulationPeriodic() {
@@ -176,7 +195,7 @@ public class SwerveDriveTrain extends SubsystemBase {
          this.moduleIO[i].setDesiredState(swerveModuleStates[i]);
       }
    }
-
+   
    /**
     * Gets the SwerveModuleState[] for our use in code.
     */

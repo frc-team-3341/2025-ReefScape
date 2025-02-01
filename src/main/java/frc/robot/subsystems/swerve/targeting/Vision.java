@@ -1,34 +1,75 @@
 package frc.robot.subsystems.swerve.targeting;
+import java.util.Optional;
+
+import javax.xml.crypto.dsig.Transform;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Vision extends SubsystemBase{
 
     PhotonCamera camera;
-    PhotonPoseEstimator poseEstimator;
-    AprilTagFields field;
-    AprilTagFieldLayout fieldLayout;
+    PhotonPoseEstimator photonEstimator;
+
+    //Simulation
+    private PhotonCameraSim cameraSim;
+    private VisionSystemSim visionSim;
+    
     Transform3d targetData;
     double[] array = {-0.03, 0.03};
     XboxController cont = new XboxController(0);
 
-    public Vision(PhotonCamera camera) {
-        this.camera = camera;
+    public Vision() {
+        this.camera = new PhotonCamera("CamGoneWrong");
+        this.photonEstimator = new PhotonPoseEstimator(Constants.Vision.TagLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, Constants.Vision.RobotToCam);
+        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
         camera.setPipelineIndex(0);
-        
+
+         // ----- Simulation
+        if (Robot.isSimulation()) {
+            // Create the vision system simulation which handles cameras and targets on the field.
+            visionSim = new VisionSystemSim("main");
+            // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
+            visionSim.addAprilTags(Constants.Vision.TagLayout);
+            // Create simulated camera properties. These can be set to mimic your actual camera.
+            var cameraProp = new SimCameraProperties();
+            cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+            cameraProp.setCalibError(0.35, 0.10);
+            cameraProp.setFPS(15);
+            cameraProp.setAvgLatencyMs(50);
+            cameraProp.setLatencyStdDevMs(15);
+            // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
+            // targets.
+            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            // Add the simulated camera to view the targets on this simulated field.
+            visionSim.addCamera(cameraSim, Constants.Vision.RobotToCam);
+
+            cameraSim.enableDrawWireframe(true);
+        }
     }
 
     //returns whether a target (AprilTag) has been detected
@@ -56,6 +97,12 @@ public class Vision extends SubsystemBase{
     //     return 0.0;
         
     // }
+    
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+            photonEstimator.setReferencePose(prevEstimatedRobotPose);
+            return photonEstimator.update(camera.getLatestResult());
+        }
+
 
     //gets target data such as x and y offset, rotational offset, and returns everything as a Transform3d 
     public Transform3d getTargetData() {
@@ -127,12 +174,10 @@ public class Vision extends SubsystemBase{
     // public Pose3d getPose() {
     //     field.loadAprilTagLayoutField();
     //     fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
-    //     poseEstimator = new PhotonPoseEstimator(fieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, getTargetData());
-    //     return poseEstimator.getReferencePose();
+    //    photonEstimator = new PhotonPoseEstimator(fieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, getTargetData());
+    //     returnphotonEstimator.getReferencePose();
         
     // }
-
-   
 
     public boolean rotationalAtSetpoint() {
         if (getZAngle() < 178 || getZAngle() > 182) {
