@@ -79,22 +79,31 @@ public class Vision extends SubsystemBase{
     //returns the current horizontal displacement with respect to the AprilTag (uses getY() because the Y offset in PhotonVision is the horizontal axis)
     public double getHorizontalDisplacement() {
         if (targetDetected()) {
-            return targetData.getY();
+            if (targetData != null) {
+                return targetData.getY();
+            }
+            return 0;
         }
-        else return 0;
+        else return 0.0;
     }
     
     public double getLongitudinalDisplacement() {
         if (targetDetected()) {
-            return targetData.getX();
+            if (targetData != null) {
+                return targetData.getX();
+            }
+            return 0;
         }
         else return 0;
     }
     
     public double getZAngle() {
         if (targetDetected()) {
-            Rotation3d rot = targetData.getRotation();
-            return Math.toDegrees(rot.getAngle());
+            if (targetData != null) {
+                Rotation3d rot = targetData.getRotation();
+                return Math.toDegrees(rot.getAngle());
+            }
+            return 0;
         }
         else return 0.0;
     }
@@ -115,31 +124,6 @@ public class Vision extends SubsystemBase{
         return 0.0;
     }
 
-    // public double getHorizontalDirection() {
-    //     double direction;
-    //     if (targetDetected()) {
-    //         if (getHorizontalDisplacement() < array[0]) {
-    //             if(getZAngle() > 182) {
-    //                 direction = 1;
-    //             }
-    //             else { 
-    //                 direction = -1;
-    //             }
-    //         }
-    //         else if (getHorizontalDisplacement() > array[1]) {
-    //             if (getZAngle() < 178) {
-    //                 direction = -1;
-    //             }
-    //             else {
-    //                 direction = 1;
-    //             }
-    //         }
-    //         else direction = 0;
-
-    //         return direction;
-    //     }
-    //     return 0.0;
-    // }
 
     public double getHorizontalDirection() {
         double direction;
@@ -223,10 +207,11 @@ public class Vision extends SubsystemBase{
             rotVals.add(0, getZAngle());
         }
 
-        SmartDashboard.putNumber("axis val", cont.getRawAxis(0));
-        SmartDashboard.putNumber("axis val 2", cont.getRawAxis(1));
-        SmartDashboard.putNumber("axis val 3", cont.getRawAxis(4));
-        SmartDashboard.putNumber("axis val 4", cont.getRawAxis(5));
+        // SmartDashboard.putNumber("axis val", cont.getRawAxis(0));
+        // SmartDashboard.putNumber("axis val 2", cont.getRawAxis(1));
+        // SmartDashboard.putNumber("axis val 3", cont.getRawAxis(4));
+        // SmartDashboard.putNumber("axis val 4", cont.getRawAxis(5));
+        SmartDashboard.putNumber("horiz direction", getHorizontalDirection());
 
 
 

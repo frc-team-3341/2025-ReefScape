@@ -3,8 +3,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
@@ -34,6 +36,8 @@ public class RobotContainer {
 
   // Xbox + an additional one for PC use
   private final Joystick drivingXbox = new Joystick(0);
+
+  private final CommandXboxController xbox = new CommandXboxController(0);
   //private final SendableChooser<Command> autoCommandChooser = new SendableChooser<>();
 
   private final SwerveDriveTrain swerveDriveTrain = new SwerveDriveTrain(startpose,
@@ -42,7 +46,7 @@ public class RobotContainer {
           Constants.SwerveModuleIOConfig.module2,
           Constants.SwerveModuleIOConfig.module3);
 
-  private final SwerveTeleopCMD swerveTeleopCMD = new SwerveTeleopCMD(this.swerveDriveTrain, this.drivingXbox);
+  private final SwerveTeleopCMD swerveTeleopCMD;
 
   private final SwerveAutonomousCMD serveAutoCMD = new SwerveAutonomousCMD(this.swerveDriveTrain,
           Constants.allianceEnabled);
@@ -58,24 +62,30 @@ public class RobotContainer {
 
 
   public RobotContainer() {
-    this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
+    swerveTeleopCMD = new SwerveTeleopCMD(this.swerveDriveTrain, this.drivingXbox);
+    // this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     vision = new Vision(cam);
     longAlignment = new LongitudinalAlignment(swerveDriveTrain, vision);
     align = new Alignment(swerveDriveTrain, vision);
-    JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
-    JoystickButton longAlignButton = new JoystickButton(drivingXbox, XboxController.Button.kX.value);
 
-    alignButton.toggleOnTrue(align);
+
+    
+    // longAlignButton.toggleOnTrue(longAlignment);
     this.configureBindings();
   }
 
 
   private void configureBindings() {
+
+    swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
+    JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
+    JoystickButton longAlignButton = new JoystickButton(drivingXbox, XboxController.Button.kX.value);
+    alignButton.toggleOnTrue(align);
   }
 
   public Command getAutonomousCommand() {
-    return swerveTeleopCMD;
-    
+    return null;
+
   }
 
   public void initCommandInTeleop() {
