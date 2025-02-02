@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
 import frc.robot.subsystems.Elevator;
@@ -50,7 +51,7 @@ private final CommandXboxController elevatorController = new CommandXboxControll
 
 
   private void configureBindings() {
-    // elevatorController.b().onTrue(elevator.stopElevator());
+    elevatorController.b().onTrue(elevator.stopElevator());
     // elevatorController.povUp().whileTrue(elevator.upPovElevator());
     // elevatorController.povUp().whileFalse(elevator.stopElevator());
     
@@ -58,8 +59,17 @@ private final CommandXboxController elevatorController = new CommandXboxControll
     // elevatorController.povDown().whileFalse(elevator.stopElevator());
     
     elevatorController.axisGreaterThan(5, 0.1).whileTrue(elevator.upElevator());
-    elevatorController.axisLessThan(5, 0.1).and(elevatorController.axisGreaterThan(5, -0.1)).whileTrue(elevator.stopElevator());
-    elevatorController.axisLessThan(5, -0.1).whileTrue(elevator.downElevator());
+    elevatorController.axisLessThan(5, 0.1).whileTrue(elevator.downElevator());
+    Trigger elevStopB1 = elevatorController.axisLessThan(5, 0.1);
+    //Elevator stop for bound 1 and 2
+    Trigger elevStopB2 = elevatorController.axisGreaterThan(5, -0.1);
+    //Trigger xOff = elevatorController.x().negate();
+
+    
+    elevStopB1.and(elevStopB2);
+    elevatorController.x().onTrue(elevator.setHeightL4());
+
+    
   }
 
 

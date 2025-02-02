@@ -6,9 +6,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 //import for PID controller
-// import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 // import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -29,22 +29,30 @@ import frc.robot.Constants;
 
 public class Elevator extends SubsystemBase {
   final SparkMax motorE = new SparkMax(20, MotorType.kBrushless);
-  SparkMaxConfig config = new SparkMaxConfig();
-  SparkAbsoluteEncoder abs_Encoder;
+  SparkClosedLoopController PIDController;
+  
+  RelativeEncoder rel_encoder;
   CommandXboxController controller;
+
 
   double input;
   double currentPos;
-
-  double maxHeight = 52;
-    double RPI = 20;
-    double max = 100000;
-    double min = -100000;
+  
+  double axleD = 0.125;
+  double distance = 10;
+  double circ = Math.PI * axleD;
+  double revolutions = distance/circ;
+    double max = 100;
+    double min = -100;
   /** Creates a new ClimbTeleop. */
   public Elevator(CommandXboxController elevatorController) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    this.PIDController = motorE.getClosedLoopController();
     controller = elevatorController;
-    this.abs_Encoder = motorE.getAbsoluteEncoder();
+    this.rel_encoder = motorE.getEncoder();
+    config.closedLoop.p(.01);
     motorE.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
   }
   
  //command to stop the motor
@@ -55,7 +63,7 @@ public class Elevator extends SubsystemBase {
     
   //resets encoders
   public void initialize(){
-      //abs_Encoder.
+      currentPos = 0;
     }
   
   
@@ -67,8 +75,9 @@ public class Elevator extends SubsystemBase {
     
    
     input = controller.getRightY();
-    currentPos = abs_Encoder.getPosition();     
+    currentPos = rel_encoder.getPosition();     
     SmartDashboard.putNumber("Current position in ticks",currentPos);
+    //PIDController.setReference(1, SparkMax.ControlType.kPosition);
   }
 
   public Command upElevator() {
@@ -98,15 +107,21 @@ public class Elevator extends SubsystemBase {
       // }     
     });
   }
-    public Command downPovElevator() {
-
+  public Command downPovElevator() {
+    return this.runOnce(()->{
+      // if (currentPos < max) {
+        motorE.set(-0.3);
+      // }     
+    });
+  }
+    public Command setHeightL4(){
       return this.runOnce(()->{
-        // if (currentPos < max) {
-          motorE.set(-0.3);
-        // }     
+        motorE.set(0);
+        PIDController.setReference(10, SparkMax.ControlType.kPosition);
       });
       
-  }
+    }
+
   
   
   //SmartDashboard.putBoolean("Forward limit switch value", motorE.getSensorCollection().isFwdLimitSwitchClosed());
