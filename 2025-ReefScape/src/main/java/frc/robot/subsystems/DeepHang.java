@@ -13,6 +13,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,16 +25,10 @@ public class DeepHang extends SubsystemBase {
   /** Creates a new DeepHang. */
   SparkMax deepHang;
 
-  // private double hangkP = 0.1; //initial test value
-  // private double hangkI = 0.0;
-  // private double hangkD = 0.0;
-
-  // private double hangkF = 0.0;
+  AHRS imu;
 
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
-
-  //public SparkClosedLoopController hangPID;
 
   public DigitalInput input;
 
@@ -46,16 +42,17 @@ public class DeepHang extends SubsystemBase {
 
   public DeepHang() {
 
+    imu = new AHRS(NavXComType.kMXP_SPI);
+
     deepHang = new SparkMax(22, MotorType.kBrushless); //CANID = 22
     hangEncoder = deepHang.getEncoder();
-    //hangPID = deepHang.getClosedLoopController();
 
     SparkMaxConfig config = new SparkMaxConfig();
 
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
-    //config.closedLoop.pidf(hangkP, hangkI, hangkD, hangkF);
-    //config.closedLoop.outputRange(-1, 1);
+    ///config.encoder.positionConversionFactor(); //num * rotations
+    //config.encoder.velocityConversionFactor(); //num * rotations per second
 
     config.idleMode(IdleMode.kBrake);
 
@@ -68,7 +65,7 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getEncoderPosition() {
-    return hangEncoder.getPosition();
+    return hangEncoder.getPosition(); //in rotations
   }
 
   public double getEncoderVelocity() {
@@ -84,11 +81,15 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getVoltage() {
-    return deepHang.getAppliedOutput(); //in volts (%)
+    return deepHang.getAppliedOutput(); //in volts
   }
 
   public double getCurrent() {
     return deepHang.getOutputCurrent(); //in amps
+  }
+
+  public double getPitch() {
+    return imu.getPitch();
   }
 
   @Override
@@ -104,6 +105,15 @@ public class DeepHang extends SubsystemBase {
       setSpeed(0);
     }
 
+    // deepHang.enableSoftLimit(SoftLimitDirection.kForward,
+    //                     SmartDashboard.getBoolean("Upper Limit", true));
+    // deepHang.enableSoftLimit(SoftLimitDirection.kReverse,
+    //                     SmartDashboard.getBoolean("Lower Limit", true));
+    // deepHang.setSoftLimit(SoftLimitDirection.kForward,
+    //                  (float)SmartDashboard.getNumber("Upper Limit", 15));
+    // deepHang.setSoftLimit(SoftLimitDirection.kReverse,
+    //                  (float)SmartDashboard.getNumber("Lower Limit", 0));
+
     SmartDashboard.putNumber("Encoder Position", getEncoderPosition());
     SmartDashboard.putNumber("Encoder Velocity", getEncoderVelocity());
 
@@ -111,12 +121,14 @@ public class DeepHang extends SubsystemBase {
     SmartDashboard.putNumber("Linear Velocity", getLinearVelocity());
 
     SmartDashboard.putNumber("Voltage", getVoltage());
-    SmartDashboard.putNumber("Output Current", getCurrent());
+    SmartDashboard.putNumber("Current", getCurrent());
 
-    //SmartDashboard.putBoolean("Proximity Sensor", input.get());
+    SmartDashboard.putBoolean("Proximity Sensor", input.get());
 
-    //SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
-    //SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
+    SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
+    SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
+
+    SmartDashboard.putNumber("Pitch", getPitch());
 
   }
 
