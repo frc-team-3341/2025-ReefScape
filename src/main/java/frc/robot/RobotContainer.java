@@ -51,6 +51,10 @@ private final CommandJoystick joystick = new CommandJoystick(0);
     joystick.button(4).onTrue(coralManipulator.stopCoral());
     joystick.button(5).onTrue(coralManipulator.intakeCoral());
     joystick.button(6).onTrue(coralManipulator.releaseCoral());
+    joystick.button(4).onTrue(coralManipulator.pivotStop());
+    joystick.button(1).onTrue(coralManipulator.pivotUp());
+    joystick.button(2).onTrue(coralManipulator.pivotDown());
+    joystick.button(3).onTrue(coralManipulator.spinPivot10());
   }
 
   public Command getAutonomousCommand() {
