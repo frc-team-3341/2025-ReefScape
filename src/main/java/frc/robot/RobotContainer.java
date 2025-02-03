@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
@@ -41,7 +40,7 @@ public class RobotContainer {
   // private CrabDrive crabDrive;
 
 private final CommandJoystick joystick = new CommandJoystick(0);
- CoralManipulator coralManipulator = new CoralManipulator(joystick);
+  CoralManipulator coralManipulator = new CoralManipulator();
   public RobotContainer() {
     this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     this.configureBindings();
@@ -58,8 +57,7 @@ private final CommandJoystick joystick = new CommandJoystick(0);
   }
 
   public Command getAutonomousCommand() {
-    return serveAutoCMD;
-    
+    return serveAutoCMD; 
   }
 
   public void initCommandInTeleop() {
