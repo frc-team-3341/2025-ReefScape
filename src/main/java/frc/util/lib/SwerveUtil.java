@@ -21,7 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.robot.Constants;
 
-import frc.robot.subsystems.swerve.SwerveModuleIO;
+import frc.robot.subsystems.swerve.SwerveModuleIOSparkMax;
 
 /**
  * A Swerve Utility class to carry out some of the work. Should work like legos!
@@ -44,7 +44,7 @@ public class SwerveUtil {
     public static void drawModulePoses(SwerveModulePosition[] modulePositions, Field2d field, Pose2d pose) {
         Pose2d[] poseArr = new Pose2d[4];
         List<Pose2d> poses = new ArrayList<>();
-        Translation2d[] translations = Constants.SwerveConstants.translations;
+        Translation2d[] translations = Constants.SwerveConstants.moduleLocations;
         for (int i = 0; i < modulePositions.length; i++) {
             Rotation2d moduleRot = modulePositions[i].angle;
             poses.add(
@@ -58,7 +58,7 @@ public class SwerveUtil {
      * Sets module positions of array moduleIO
      * @param moduleIO Array of module interface class to use (uses .getPosition())
      */
-    public static SwerveModulePosition[] setModulePositions(SwerveModuleIO[] moduleIO) {
+    public static SwerveModulePosition[] setModulePositions(SwerveModuleIOSparkMax[] moduleIO) {
         SwerveModulePosition[] returnedPositions = new SwerveModulePosition[moduleIO.length];
         // Iterate through module positions and assign 0 values
         for (int i = 0; i < moduleIO.length; i++) {
@@ -108,7 +108,7 @@ public class SwerveUtil {
      * @param actualStates Array of swerve module states
      * @param kinematics   Object representing kinematics class
      */
-    public static void addSwerveSimulation(SwerveModuleIO[] moduleIO, SwerveModuleState[] actualStates,
+    public static void addSwerveSimulation(SwerveModuleIOSparkMax[] moduleIO, SwerveModuleState[] actualStates,
             SwerveDriveKinematics kinematics) {
         // Simulate Navx
         int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
@@ -125,9 +125,9 @@ public class SwerveUtil {
         angle.set(SwerveUtil.integratedSimAngle);
 
         // Update moduleIO's sim objects with a dt of 0.02
-        for (SwerveModuleIO module : moduleIO) {
-            module.updateSim();
-        }
+        //for (SwerveModuleIOSparkMax module : moduleIO) {
+            //module.updateSim();
+        //}
     }
 
     /**
@@ -138,7 +138,7 @@ public class SwerveUtil {
      * @param actualStates Array of swerve module states
      * @param kinematics   Object representing kinematics class
      */
-    public static double addFakeGyro(SwerveModuleIO[] moduleIO, SwerveModuleState[] actualStates,
+    public static double addFakeGyro(SwerveModuleIOSparkMax[] moduleIO, SwerveModuleState[] actualStates,
             SwerveDriveKinematics kinematics) {
 
         // Find omega/angular velocity of chassis' rotation
@@ -152,9 +152,9 @@ public class SwerveUtil {
     /**
      * Updates all telemetry for the module every 20 ms in periodic. Very important!
      */
-    public static void updateTelemetry(SwerveModuleIO[] moduleIO) {
+    public static void updateTelemetry(SwerveModuleIOSparkMax[] moduleIO) {
         // Update moduleIO's sim objects with a dt of 0.02
-        for (SwerveModuleIO module : moduleIO) {
+        for (SwerveModuleIOSparkMax module : moduleIO) {
             module.updateTelemetry();
         }
     }

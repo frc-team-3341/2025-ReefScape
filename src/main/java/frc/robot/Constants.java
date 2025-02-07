@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swerve.SwerveModuleIOSim;
 import frc.robot.subsystems.swerve.SwerveModuleIOSparkMax;
 
 /**
@@ -33,25 +32,25 @@ public final class Constants {
     // MODIFY THIS WHEN SWITCHING BETWEEN CHASSIS
     // THIS IS THE FIRST THING YOU SHOULD THINK ABOUT/SEE!!!
 
+    private static final RobotType ROBOT_TYPE = RobotType.ROBOT_SIMULATION;
+
     public static final class SwerveModuleIOConfig{
+        // Drive can ids start at front left from 1 and are odd, then go clockwise
+        // Turn can ids start at front left from 2 and are even, then go clockwise
+        // CANCoder ids start at front left from 10 and are sequential, then go clockwise
+        // What about 9 you may ask? We need to reserve this since the new PDP usea that id
         static SwerveModuleIOSparkMax module0 = new SwerveModuleIOSparkMax(//front left
-                0, 1,2,9,-62.51,false);
+                0, 1,2,10,ROBOT_TYPE.moduleAngleOffsets[0],false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         static SwerveModuleIOSparkMax module1 = new SwerveModuleIOSparkMax(//front right
-                1, 3,4,10,-179.82,true);
+                1, 3,4,11,ROBOT_TYPE.moduleAngleOffsets[1],true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         static SwerveModuleIOSparkMax module2 = new SwerveModuleIOSparkMax(//back left
-                2, 5,6,11,108.11,false);
+                2, 5,6,12,ROBOT_TYPE.moduleAngleOffsets[2],false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         static SwerveModuleIOSparkMax module3 = new SwerveModuleIOSparkMax(//back right
-                3, 7,8,12,82.62,true);
+                3, 7,8,13,ROBOT_TYPE.moduleAngleOffsets[3],true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        
-        //fix simulation
-        // static SwerveModuleIOSim simModule0 = new SwerveModuleIOSim(0);
-        // static SwerveModuleIOSim simModule1 = new SwerveModuleIOSim(1);
-        // static SwerveModuleIOSim simModule2 = new SwerveModuleIOSim(2);
-        // static SwerveModuleIOSim simModule3 = new SwerveModuleIOSim(3);
     }
 
     public static final class SwerveConstants {
@@ -65,9 +64,9 @@ public final class Constants {
         //distance between swerve modules on x and y axis
         public static final double swerveModuleXdistance = Units.inchesToMeters(22); 
         public static final double swerveModuleYdistance = Units.inchesToMeters(22); 
-        //public static final double trackWidthHypotenuse = Math.sqrt(Math.pow(trackWidthX, 2) + Math.pow(trackWidthY, 2));
-
-        public static final Translation2d[] translations = new Translation2d[] {
+        
+        //Module locations in meters
+        public static final Translation2d[] moduleLocations = new Translation2d[] {
             new Translation2d( swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
             new Translation2d( swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
             new Translation2d(-swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
@@ -76,12 +75,18 @@ public final class Constants {
         // Joystick deadband for no accidental movement
         public static final double deadBand = 0.05;
 
-        // Wheels/gears should be facing inwards when calibrating the chassis
-        //public static final boolean[] moduleInverts = {false, true, false, true};
+        //Probs need to update this and move it to RobotType
+        public static final double robotMassInKg = 120;
+
+        public static final double wheelGripCoefficientOfFriction = 1.19;
     }
 
+    //We use SDS MK4i L1 modules. Google it if you want to verify all this stuff
     public static final class ModuleConstants {
-        
+
+        public static final int driveCurrentLimit = 35;
+        public static final int turnCurrentLimit = 20;
+
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0); // Assuming SDS module
         
         public static final double driveGearRatio = 8.14; // For SDS MK4i module
@@ -106,7 +111,7 @@ public final class Constants {
 
         // See REV: https://motors.vex.com/other-motors/neo
         // The 5790 value is the correct empirical value from the woodblocks
-        // TODO - Might need to be re-calibrated for carpet or concrete
+        // Might need to be re-calibrated for carpet or concrete
         public static final double maxRPMWoodBlocks = 5790.0;
         public static final double maxRPMCarpet = 5280.0;
 
@@ -127,11 +132,7 @@ public final class Constants {
 
         public static final double turnkP = 0.7; 
         public static final double turnkI = 0.0;
-        public static final double turnkD = 0.0;
-
-        public static final int driveCurrentLimit = 35;
-        public static final int turnCurrentLimit = 20;
-
+        public static final double turnkD = 0.0;    
     }
 
 }
