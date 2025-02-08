@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
@@ -30,7 +31,7 @@ public class DeepHang extends SubsystemBase {
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  public DigitalInput input;
+  public DigitalInput inductionSensor;
 
   //2 limit switches
   //1 induction sensor -- 
@@ -56,10 +57,20 @@ public class DeepHang extends SubsystemBase {
 
     config.idleMode(IdleMode.kBrake);
 
+    inductionSensor = new DigitalInput(0); //proximity sensor
+
+    SoftLimitConfig softLimitConfig = new SoftLimitConfig();
+
+    softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
+    softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
+
+    softLimitConfig.forwardSoftLimit(0); //sets the forward soft limit to 0
+    softLimitConfig.reverseSoftLimit(0); //sets the reverse soft limit to 0
+
     upperLimit = deepHang.getForwardLimitSwitch();
     lowerLimit = deepHang.getReverseLimitSwitch();
 
-    input = new DigitalInput(0); //proximity sensor
+    config.apply(softLimitConfig);
 
     deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -89,7 +100,7 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getPitch() {
-    return imu.getPitch();
+    return imu.getPitch(); //in degrees
   }
 
   @Override
@@ -105,15 +116,6 @@ public class DeepHang extends SubsystemBase {
       setSpeed(0);
     }
 
-    // deepHang.enableSoftLimit(SoftLimitDirection.kForward,
-    //                     SmartDashboard.getBoolean("Upper Limit", true));
-    // deepHang.enableSoftLimit(SoftLimitDirection.kReverse,
-    //                     SmartDashboard.getBoolean("Lower Limit", true));
-    // deepHang.setSoftLimit(SoftLimitDirection.kForward,
-    //                  (float)SmartDashboard.getNumber("Upper Limit", 15));
-    // deepHang.setSoftLimit(SoftLimitDirection.kReverse,
-    //                  (float)SmartDashboard.getNumber("Lower Limit", 0));
-
     SmartDashboard.putNumber("Encoder Position", getEncoderPosition());
     SmartDashboard.putNumber("Encoder Velocity", getEncoderVelocity());
 
@@ -123,13 +125,12 @@ public class DeepHang extends SubsystemBase {
     SmartDashboard.putNumber("Voltage", getVoltage());
     SmartDashboard.putNumber("Current", getCurrent());
 
-    SmartDashboard.putBoolean("Proximity Sensor", input.get());
+    SmartDashboard.putBoolean("Proximity Sensor", inductionSensor.get());
 
     SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
 
-    SmartDashboard.putNumber("Pitch", getPitch());
-
+    SmartDashboard.putNumber("Pitch", getPitch()); //logs the tilt of the chassis
   }
 
   public void resetEncoder() {
