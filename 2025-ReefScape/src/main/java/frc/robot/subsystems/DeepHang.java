@@ -31,7 +31,7 @@ public class DeepHang extends SubsystemBase {
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
 
-  public DigitalInput inductionSensor;
+  public DigitalInput inductiveSensor;
 
   //2 limit switches
   //1 induction sensor -- 
@@ -57,22 +57,24 @@ public class DeepHang extends SubsystemBase {
 
     config.idleMode(IdleMode.kBrake);
 
-    inductionSensor = new DigitalInput(0); //proximity sensor
+    inductiveSensor = new DigitalInput(0); //proximity sensor
 
     SoftLimitConfig softLimitConfig = new SoftLimitConfig();
 
     softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
     softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
 
-    softLimitConfig.forwardSoftLimit(0); //sets the forward soft limit to 0
-    softLimitConfig.reverseSoftLimit(0); //sets the reverse soft limit to 0
+    softLimitConfig.forwardSoftLimit(60); //sets the forward soft limit to 12 inches
+    softLimitConfig.reverseSoftLimit(-60); //sets the reverse soft limit to -12 inches
 
     upperLimit = deepHang.getForwardLimitSwitch();
     lowerLimit = deepHang.getReverseLimitSwitch();
 
+    //applies the soft limit configuration to the motor controller
     config.apply(softLimitConfig);
 
-    deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    //configures the motor controller with the specified configuration
+    deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
   }
 
   public double getEncoderPosition() {
@@ -125,12 +127,12 @@ public class DeepHang extends SubsystemBase {
     SmartDashboard.putNumber("Voltage", getVoltage());
     SmartDashboard.putNumber("Current", getCurrent());
 
-    SmartDashboard.putBoolean("Proximity Sensor", inductionSensor.get());
+    SmartDashboard.putBoolean("Inductive Sensor", inductiveSensor.get());
 
     SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
 
-    SmartDashboard.putNumber("Pitch", getPitch()); //logs the tilt of the chassis
+    SmartDashboard.putNumber("Pitch", getPitch()); //logs the tilt of the chassis relative to the ground
   }
 
   public void resetEncoder() {
@@ -143,13 +145,13 @@ public class DeepHang extends SubsystemBase {
 
   public Command fwd() {
     return this.runOnce(() -> {
-      this.setSpeed(0.05);
+      this.setSpeed(0.2); //was 0.05
     });
   }
 
   public Command back() {
     return this.runOnce(() -> {
-      this.setSpeed(-0.05);
+      this.setSpeed(-0.2); //was -0.05
     });
   }
 
