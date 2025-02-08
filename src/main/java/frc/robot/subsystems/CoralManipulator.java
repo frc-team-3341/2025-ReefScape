@@ -1,20 +1,15 @@
 package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class CoralManipulator extends SubsystemBase {
     private final SparkMax coralMotor = new SparkMax(21, MotorType.kBrushless);
@@ -23,12 +18,12 @@ public class CoralManipulator extends SubsystemBase {
     SparkClosedLoopController pidPivot;
     double degrees = 180;
 
-    CommandXboxController cXboxController;
-    public CoralManipulator(CommandXboxController xboxController) {
-      cXboxController = xboxController;
+
+  
+    public CoralManipulator() {
       rel_encoder = pivotMotor.getEncoder();
-      pidPivot = pivotMotor.getClosedLoopController();
       SparkMaxConfig config = new SparkMaxConfig();
+      this.pidPivot = pivotMotor.getClosedLoopController();
       config.closedLoop.p(.01);
       coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -60,10 +55,11 @@ public class CoralManipulator extends SubsystemBase {
     }
 
     public void periodic() {
-      SmartDashboard.putNumber("Position in ticks", rel_encoder.getPosition());
+      SmartDashboard.putNumber("Position in ticks", rel_encoder.getPosition()); 
+      SmartDashboard.putNumber("Setpoint Drive Velocity", pivotMotor.getBusVoltage());
+      SmartDashboard.putNumber("Setpoint Drive Velocity", coralMotor.getBusVoltage());
+      //  SmartDashboard.putNumber("Coral Angle", rel_encoder.getAngle());
     }
-
-
 }
 
 
