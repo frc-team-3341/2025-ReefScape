@@ -3,8 +3,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
+import frc.robot.subsystems.DeepHang;
 import frc.robot.subsystems.swerve.SwerveDriveTrain;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,6 +25,7 @@ public class RobotContainer {
 
   // Xbox + an additional one for PC use
   private final Joystick drivingXbox = new Joystick(0);
+  private final Joystick hangXbox = new Joystick(1);
   //private final SendableChooser<Command> autoCommandChooser = new SendableChooser<>();
 
   private final SwerveDriveTrain swerveDriveTrain = new SwerveDriveTrain(startpose,
@@ -37,7 +40,8 @@ public class RobotContainer {
           Constants.allianceEnabled);
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
-
+  
+  private DeepHang hang;
 
 
   public RobotContainer() {
@@ -45,6 +49,18 @@ public class RobotContainer {
     this.configureBindings();
   }
 
+  public void configureDeepHang() {
+    hang = new DeepHang();
+
+    POVButton hangUp = new POVButton(hangXbox, 0);
+    POVButton hangDown = new POVButton(hangXbox, 180);
+
+    hangUp.whileTrue(hang.fwd());
+    hangUp.whileFalse(hang.stop());
+
+    hangDown.whileTrue(hang.rev());
+    hangDown.whileFalse(hang.stop());
+  }
 
   private void configureBindings() {
   }
