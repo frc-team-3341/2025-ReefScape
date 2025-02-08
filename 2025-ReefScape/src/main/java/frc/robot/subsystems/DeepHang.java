@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,8 +53,10 @@ public class DeepHang extends SubsystemBase {
 
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
-    ///config.encoder.positionConversionFactor(); //num * rotations
-    //config.encoder.velocityConversionFactor(); //num * rotations per second
+    //3 rotations = 1 lead screw rotation? 3:1:circumference of lead screw?
+    //diameter of lead screw = .75 inches
+    config.encoder.positionConversionFactor((Math.PI * Units.inchesToMeters(.75)) / 3); //in rotations
+    config.encoder.velocityConversionFactor((Math.PI * Units.inchesToMeters(.75)) / 3 / 60); //in rotations per second
 
     config.idleMode(IdleMode.kBrake);
 
@@ -64,9 +67,8 @@ public class DeepHang extends SubsystemBase {
     softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
     softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
 
-    softLimitConfig.forwardSoftLimit(60); //sets the forward soft limit to 12 inches
-    softLimitConfig.reverseSoftLimit(-60); //sets the reverse soft limit to -12 inches
-
+    softLimitConfig.forwardSoftLimit(6);
+    softLimitConfig.reverseSoftLimit(0);
     upperLimit = deepHang.getForwardLimitSwitch();
     lowerLimit = deepHang.getReverseLimitSwitch();
 
@@ -78,11 +80,11 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getEncoderPosition() {
-    return hangEncoder.getPosition(); //in rotations
+    return hangEncoder.getPosition(); //in rotations of lead screw
   }
 
   public double getEncoderVelocity() {
-    return hangEncoder.getVelocity() / 60; //in rotations per second
+    return hangEncoder.getVelocity(); //in rotations per second of lead screw
   }
 
   public double getLinearPosition() {
@@ -98,7 +100,7 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getCurrent() {
-    return deepHang.getOutputCurrent(); //in amps
+    return (int) deepHang.getOutputCurrent(); //in amps
   }
 
   public double getPitch() {
