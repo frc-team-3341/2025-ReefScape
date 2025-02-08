@@ -79,20 +79,20 @@ public class DeepHang extends SubsystemBase {
     deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
   }
 
-  public double getEncoderPosition() {
-    return hangEncoder.getPosition(); //in rotations of lead screw
-  }
+//   public double getEncoderPosition() {
+//     return hangEncoder.getPosition(); //in rotations of lead screw
+//   }
 
-  public double getEncoderVelocity() {
-    return hangEncoder.getVelocity(); //in rotations per second of lead screw
-  }
+//   public double getEncoderVelocity() {
+//     return hangEncoder.getVelocity(); //in rotations per second of lead screw
+//   }
 
   public double getLinearPosition() {
-    return getEncoderPosition() * 0.2; //in inches
+    return hangEncoder.getPosition() * 0.2; //in inches
   }
 
   public double getLinearVelocity() {
-    return getEncoderVelocity() * 0.2; //in inches per second
+    return hangEncoder.getVelocity() * 0.2; //in inches per second
   }
 
   public double getVoltage() {
@@ -101,10 +101,6 @@ public class DeepHang extends SubsystemBase {
 
   public double getCurrent() {
     return (int) deepHang.getOutputCurrent(); //in amps
-  }
-
-  public double getPitch() {
-    return imu.getPitch(); //in degrees
   }
 
   @Override
@@ -120,8 +116,8 @@ public class DeepHang extends SubsystemBase {
       setSpeed(0);
     }
 
-    SmartDashboard.putNumber("Encoder Position", getEncoderPosition());
-    SmartDashboard.putNumber("Encoder Velocity", getEncoderVelocity());
+    SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
+    SmartDashboard.putNumber("Encoder Velocity", hangEncoder.getVelocity()); //in rotations per second
 
     SmartDashboard.putNumber("Linear Position", getLinearPosition());
     SmartDashboard.putNumber("Linear Velocity", getLinearVelocity());
@@ -134,7 +130,7 @@ public class DeepHang extends SubsystemBase {
     SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
 
-    SmartDashboard.putNumber("Pitch", getPitch()); //logs the tilt of the chassis relative to the ground
+    SmartDashboard.putNumber("Pitch", imu.getPitch()); //logs the tilt of the chassis relative to the ground
   }
 
   public void resetEncoder() {
