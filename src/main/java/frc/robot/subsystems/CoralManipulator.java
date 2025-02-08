@@ -14,22 +14,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class CoralManipulator extends SubsystemBase {
-    private final SparkMax coralMotor = new SparkMax(0, MotorType.kBrushless);
-    private final SparkMax pivotMotor = new SparkMax(21, MotorType.kBrushless);
+    private final SparkMax coralMotor = new SparkMax(21, MotorType.kBrushless);
+    private final SparkMax pivotMotor = new SparkMax(0, MotorType.kBrushless);
     RelativeEncoder rel_encoder;
     SparkClosedLoopController pidPivot;
     double degrees = 180;
 
-    CommandJoystick cJoystick;
-    public CoralManipulator(CommandJoystick joystick) {
-      cJoystick = joystick;
+    CommandXboxController cXboxController;
+    public CoralManipulator(CommandXboxController xboxController) {
+      cXboxController = xboxController;
       rel_encoder = pivotMotor.getEncoder();
       pidPivot = pivotMotor.getClosedLoopController();
       SparkMaxConfig config = new SparkMaxConfig();
       config.closedLoop.p(.01);
-
       coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
@@ -56,12 +56,14 @@ public class CoralManipulator extends SubsystemBase {
     }
 
     public Command spinPivot10() {
-      return this.runOnce(() -> pidPivot.setReference(0.5, SparkMax.ControlType.kPosition));
+      return this.runOnce(() -> pidPivot.setReference(0.5 , SparkMax.ControlType.kPosition));
     }
 
     public void periodic() {
       SmartDashboard.putNumber("Position in ticks", rel_encoder.getPosition());
     }
+
+
 }
 
 

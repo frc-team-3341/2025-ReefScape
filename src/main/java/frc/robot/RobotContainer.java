@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
 import frc.robot.subsystems.CoralManipulator;
@@ -40,26 +41,26 @@ public class RobotContainer {
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
 
-private final CommandJoystick joystick = new CommandJoystick(0);
- CoralManipulator coralManipulator = new CoralManipulator(joystick);
+private final CommandXboxController xboxController = new CommandXboxController(0);
+ CoralManipulator coralManipulator = new CoralManipulator(xboxController);
   public RobotContainer() {
     this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     this.configureBindings();
   }
 
   private void configureBindings() {
-    joystick.button(4).onTrue(coralManipulator.stopCoral());
-    joystick.button(5).onTrue(coralManipulator.intakeCoral());
-    joystick.button(6).onTrue(coralManipulator.releaseCoral());
-    joystick.button(4).onTrue(coralManipulator.pivotStop());
-    joystick.button(1).onTrue(coralManipulator.pivotUp());
-    joystick.button(2).onTrue(coralManipulator.pivotDown());
-    joystick.button(3).onTrue(coralManipulator.spinPivot10());
+    xboxController.button(3).onTrue(coralManipulator.stopCoral());
+    xboxController.button(1).onTrue(coralManipulator.intakeCoral());
+    xboxController.button(2).onTrue(coralManipulator.releaseCoral());
+    xboxController.axisGreaterThan(2, 0).whileTrue(coralManipulator.pivotStop());
+    xboxController.povUp().onTrue(coralManipulator.pivotUp());
+    xboxController.povDown().onTrue(coralManipulator.pivotDown());
+    xboxController.button(0).onTrue(coralManipulator.spinPivot10());
   }
 
   public Command getAutonomousCommand() {
     return serveAutoCMD;
-    
+  
   }
 
   public void initCommandInTeleop() {
