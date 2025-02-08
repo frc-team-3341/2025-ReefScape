@@ -69,14 +69,26 @@ public class Alignment extends Command{
         swerve.drive(new Translation2d(0, 0.3*lHorizDirection), 0.3*lRotDirection, false, false);
       }
       if (vision.joystickHeld()) {
-        if(vision.getHorizontalDirection() > 0) {
-            swerve.drive(new Translation2d(0, -xbox.getRawAxis(0)*0.8*horizDirection), xbox.getRawAxis(4)*0.9*rotDirection, false, false);
-        }
-        if (vision.getHorizontalDirection() < 0) {
-            swerve.drive(new Translation2d(0, xbox.getRawAxis(0)*0.8*horizDirection), xbox.getRawAxis(4)*0.9*rotDirection, false, false);
-        }
-        swerve.drive(new Translation2d(0, -xbox.getRawAxis(0)*0.8), xbox.getRawAxis(4)*0.9*rotDirection, false, false);
-        
+        // if(vision.getHorizontalDirection() > 0) {
+        //     if(vision.getRotationalDirection() < 0) {
+        //         swerve.drive(new Translation2d(0, -xbox.getRawAxis(0)*0.8*horizDirection), -xbox.getRawAxis(4)*0.9*rotDirection, false, false);
+        //     }
+        //     else if(vision.getRotationalDirection() > 0) {
+        //         swerve.drive(new Translation2d(0, -xbox.getRawAxis(0)*0.8*horizDirection), xbox.getRawAxis(4)*0.9*rotDirection, false, false);
+        //     }
+        //     swerve.drive(new Translation2d(0, -xbox.getRawAxis(0)*0.8*horizDirection), xbox.getRawAxis(4)*0.9, false, false);
+        // }
+        // if (vision.getHorizontalDirection() < 0) {
+        //     if(vision.getRotationalDirection() < 0) {
+        //         swerve.drive(new Translation2d(0, xbox.getRawAxis(0)*0.8*horizDirection), -xbox.getRawAxis(4)*0.9*rotDirection, false, false);
+        //     }
+        //     else if(vision.getRotationalDirection() > 0) {
+        //         swerve.drive(new Translation2d(0, xbox.getRawAxis(0)*0.8*horizDirection), xbox.getRawAxis(4)*0.9*rotDirection, false, false);
+        //     }
+        //     swerve.drive(new Translation2d(0, xbox.getRawAxis(0)*0.8*horizDirection), xbox.getRawAxis(4)*0.9, false, false);
+        // }
+        // swerve.drive(new Translation2d(0, -xbox.getRawAxis(0)*0.8), xbox.getRawAxis(4)*0.9*rotDirection, false, false);
+        swerve.drive(new Translation2d(-1.5*xbox.getRawAxis(1), -1.5*xbox.getRawAxis(0)), -1.5*xbox.getRawAxis(4), false, false);
       }
     }
 

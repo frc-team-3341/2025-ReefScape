@@ -16,7 +16,7 @@ public class SwerveTeleopCMD extends Command {
    // Initialize empty swerveDriveTrain object
    private final SwerveDriveTrain swerveDriveTrain;
    private final Joystick joystick;
-   private boolean robotCentric = false;
+   private boolean fieldCentric = true;
 
 
     // Define axises for using joystick
@@ -95,7 +95,7 @@ public class SwerveTeleopCMD extends Command {
       // Drive swerveDriveTrain with values
       this.swerveDriveTrain.drive(new Translation2d(correctedX, correctedY),
             rotationVal * Constants.SwerveConstants.maxChassisAngularVelocity,
-            this.robotCentric, false);
+            this.fieldCentric, false);
    }
 
    // Called once the command ends or is interrupted.
