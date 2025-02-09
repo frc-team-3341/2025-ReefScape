@@ -57,7 +57,7 @@ public class SwerveTeleopCMD extends Command {
       double yVal = -this.joystick.getRawAxis(XboxController.Axis.kLeftX.value);
       double rotation = -this.joystick.getRawAxis(XboxController.Axis.kRightX.value);
       double translationRightTrigger = this.joystick.getRawAxis(XboxController.Axis.kRightTrigger.value);
-      //this.robotCentric = this.joystick.getRawButtonPressed(XboxController.Button.kX.value);
+      this.fieldCentric = this.joystick.getRawButtonPressed(XboxController.Button.kX.value);
 
       // Get values of controls and apply deadband
       // double xVal = -x; // Flip for XBox support

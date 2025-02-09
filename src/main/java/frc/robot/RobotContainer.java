@@ -63,7 +63,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     swerveTeleopCMD = new SwerveTeleopCMD(this.swerveDriveTrain, this.drivingXbox);
-    // this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
+    this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     vision = new Vision(cam);
     longAlignment = new LongitudinalAlignment(swerveDriveTrain, vision);
     align = new Alignment(swerveDriveTrain, vision);
@@ -79,7 +79,7 @@ public class RobotContainer {
 
     swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     JoystickButton alignButton = new JoystickButton(drivingXbox, XboxController.Button.kA.value);
-    JoystickButton longAlignButton = new JoystickButton(drivingXbox, XboxController.Button.kX.value);
+    // JoystickButton longAlignButton = new JoystickButton(drivingXbox, XboxController.Button.kX.value);
     alignButton.toggleOnTrue(align);
   }
 
