@@ -54,7 +54,7 @@ public class RobotContainer {
 
     POVButton hangUp = new POVButton(hangXbox, 0);
     POVButton hangDown = new POVButton(hangXbox, 180);
-
+    
     hangUp.whileTrue(hang.fwd());
     hangUp.whileFalse(hang.stop());
 

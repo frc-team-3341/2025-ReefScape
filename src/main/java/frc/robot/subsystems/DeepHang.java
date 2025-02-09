@@ -67,8 +67,8 @@ public class DeepHang extends SubsystemBase {
     softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
     softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
 
-    softLimitConfig.forwardSoftLimit(6);
-    softLimitConfig.reverseSoftLimit(0);
+    softLimitConfig.forwardSoftLimit(2); //sets the forward soft limit to 2 rotations
+    softLimitConfig.reverseSoftLimit(0); //sets the reverse soft limit to 0 rotations
     upperLimit = deepHang.getForwardLimitSwitch();
     lowerLimit = deepHang.getReverseLimitSwitch();
 
@@ -79,28 +79,12 @@ public class DeepHang extends SubsystemBase {
     deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
   }
 
-//   public double getEncoderPosition() {
-//     return hangEncoder.getPosition(); //in rotations of lead screw
-//   }
-
-//   public double getEncoderVelocity() {
-//     return hangEncoder.getVelocity(); //in rotations per second of lead screw
-//   }
-
   public double getLinearPosition() {
-    return hangEncoder.getPosition() * 0.2; //in inches
+    return hangEncoder.getPosition() * 0.2; //1 rotation of the encoder translates to 0.2 inches of height
   }
 
   public double getLinearVelocity() {
-    return hangEncoder.getVelocity() * 0.2; //in inches per second
-  }
-
-  public double getVoltage() {
-    return deepHang.getAppliedOutput(); //in volts
-  }
-
-  public double getCurrent() {
-    return (int) deepHang.getOutputCurrent(); //in amps
+    return hangEncoder.getVelocity() * 0.2;
   }
 
   @Override
@@ -109,7 +93,7 @@ public class DeepHang extends SubsystemBase {
 
     if(lowerLimit.isPressed()) {
       setSpeed(0);
-      hangEncoder.setPosition(0);
+      resetEncoder();
     }
 
     if(upperLimit.isPressed()) {
@@ -119,18 +103,20 @@ public class DeepHang extends SubsystemBase {
     SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
     SmartDashboard.putNumber("Encoder Velocity", hangEncoder.getVelocity()); //in rotations per second
 
-    SmartDashboard.putNumber("Linear Position", getLinearPosition());
-    SmartDashboard.putNumber("Linear Velocity", getLinearVelocity());
+    SmartDashboard.putNumber("Linear Position", getLinearPosition()); //in inches
+    SmartDashboard.putNumber("Linear Velocity", getLinearVelocity()); //in inches per second
 
-    SmartDashboard.putNumber("Voltage", getVoltage());
-    SmartDashboard.putNumber("Current", getCurrent());
+    SmartDashboard.putNumber("Voltage", deepHang.getAppliedOutput()); //in volts
+    SmartDashboard.putNumber("Current", (int) deepHang.getOutputCurrent()); //in amps
 
-    SmartDashboard.putBoolean("Inductive Sensor", inductiveSensor.get());
+    // returns true if the circut is closed -- when a metalic object is close to the sensor
+    SmartDashboard.putBoolean("Inductive Sensor", !inductiveSensor.get());
 
     SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
     SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
 
-    SmartDashboard.putNumber("Pitch", imu.getPitch()); //logs the tilt of the chassis relative to the ground
+    //logs the tilt of the chassis relative to the ground
+    SmartDashboard.putNumber("Pitch", imu.getPitch());
   }
 
   public void resetEncoder() {
