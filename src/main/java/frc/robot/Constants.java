@@ -34,19 +34,31 @@ public final class Constants {
     // THIS IS THE FIRST THING YOU SHOULD THINK ABOUT/SEE!!!
 
     public static final class SwerveModuleIOConfig{
-        static SwerveModuleIOSparkMax module0 = new SwerveModuleIOSparkMax(//front left
-                0, 1,2,9,-62.51,false);
+        static SwerveModuleIOSparkMax module0FL = new SwerveModuleIOSparkMax(//front left
+                0, 1,2,9, -0.159118,false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module1 = new SwerveModuleIOSparkMax(//front right
-                1, 3,4,10,-179.82,true);
+        static SwerveModuleIOSparkMax module1FR = new SwerveModuleIOSparkMax(//front right
+                1, 3,4,10, 0.01001,false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module2 = new SwerveModuleIOSparkMax(//back left
-                2, 5,6,11,108.11,false);
+        static SwerveModuleIOSparkMax module2BR = new SwerveModuleIOSparkMax(//back right
+                2, 5,6,11, 0.42537, true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module3 = new SwerveModuleIOSparkMax(//back right
-                3, 7,8,12,82.62,true);
+        static SwerveModuleIOSparkMax module3BL = new SwerveModuleIOSparkMax(//back left
+                3, 7,8,12, -0.23196,true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         
+        // static SwerveModuleIOSparkMax iapmodule0 = new SwerveModuleIOSparkMax(//front left
+        //         0, 1,2,9,-62.51,false);
+        //         //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
+        // static SwerveModuleIOSparkMax iapmodule1 = new SwerveModuleIOSparkMax(//front right
+        //         1, 3,4,10,-179.82,true);
+        //         //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
+        // static SwerveModuleIOSparkMax iapmodule2 = new SwerveModuleIOSparkMax(//back left
+        //         2, 5,6,11,108.11,false);
+        //         //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
+        // static SwerveModuleIOSparkMax iapmodule3 = new SwerveModuleIOSparkMax(//back right
+        //         3, 7,8,12,82.62,true);
+        //         //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         //fix simulation
         // static SwerveModuleIOSim simModule0 = new SwerveModuleIOSim(0);
         // static SwerveModuleIOSim simModule1 = new SwerveModuleIOSim(1);
@@ -63,15 +75,15 @@ public final class Constants {
         public static final double maxChassisAngularVelocity = Math.PI * 1.0;
         
         //distance between swerve modules on x and y axis
-        public static final double swerveModuleXdistance = Units.inchesToMeters(22); 
-        public static final double swerveModuleYdistance = Units.inchesToMeters(22); 
+        public static final double swerveModuleXdistance = Units.inchesToMeters(24.5); 
+        public static final double swerveModuleYdistance = Units.inchesToMeters(24.5); 
         //public static final double trackWidthHypotenuse = Math.sqrt(Math.pow(trackWidthX, 2) + Math.pow(trackWidthY, 2));
 
         public static final Translation2d[] translations = new Translation2d[] {
             new Translation2d( swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
             new Translation2d( swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
-            new Translation2d(-swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
-            new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0) };
+            new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
+            new Translation2d(-swerveModuleXdistance / 2.0, swerveModuleYdistance / 2.0) };
 
         // Joystick deadband for no accidental movement
         public static final double deadBand = 0.05;

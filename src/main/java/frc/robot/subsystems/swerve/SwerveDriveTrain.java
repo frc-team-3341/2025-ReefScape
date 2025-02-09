@@ -36,7 +36,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    private AHRS navx = new AHRS(NavXComType.kMXP_SPI);
 
    //Creates pdh
-   public PowerDistribution pdh = new PowerDistribution(0, PowerDistribution.ModuleType.kCTRE);
+   public PowerDistribution pdh = new PowerDistribution(15, PowerDistribution.ModuleType.kRev);
 
    // Create object representing swerve modules
    private SwerveModuleIOSparkMax[] moduleIO;
@@ -72,9 +72,9 @@ public class SwerveDriveTrain extends SubsystemBase {
     * @param BR Swerve module - CAN 7 - Drive; CAN 8 - Turn; CAN 12 - BR CANCoder
     * @author Aric Volman
     */
-   public SwerveDriveTrain(Pose2d startingPoint, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BL, SwerveModuleIOSparkMax BR) {
+   public SwerveDriveTrain(Pose2d startingPoint, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BR, SwerveModuleIOSparkMax BL) {
       // Assign modules to their object
-      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BL, BR };
+      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BR, BL };
 
       // Iterate through module positions and assign initial values
       modulePositions = SwerveUtil.setModulePositions(moduleIO);

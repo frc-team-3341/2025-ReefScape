@@ -85,35 +85,17 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
        this.driveSparkMax = new SparkMax(driveID, MotorType.kBrushless);
        this.turnSparkMax = new SparkMax(turnID, MotorType.kBrushless);
 
-       configCANCoder();
        configDriveMotor(invert);
        configTurnMotor();
-
-       //Not sure why these values are set here. Gonna go with the defaults for now
-       //driveSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
-       //turnSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65535);
-       //turnSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
        this.driveEncoder.setPosition(0);
        
        // Offsets the position of the CANCoder via an offset and initializes the turning encoder, placed in proper scope of [-180, 180)
-       this.turnEncoder.setPosition(this.canCoder.getAbsolutePosition().getValueAsDouble() - Units.degreesToRotations(this.offset));
+       this.turnEncoder.setPosition(this.canCoder.getAbsolutePosition().getValueAsDouble() - this.offset);
        state.angle = new Rotation2d(Units.rotationsToRadians(this.turnEncoder.getPosition()));
 
        this.num = num;
 
-    }
-
-    public void configCANCoder() {
-        //canCoder.configFactoryDefault();
-
-        // Set position of encoder to absolute mode
-        //canCoder.setPositionToAbsolute();
-        // Boot to absolute position
-        //canCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        // Important for matching up the offset of the angle
-        // NEED THIS LINE - IF NOT, THEN WRONG OFFSETS WILL BE FOUND
-        //canCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     }
 
     public void configDriveMotor(boolean invert) {
@@ -217,7 +199,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
 
     public SwerveModuleState getCanCoderState(){
         double velocity = this.driveEncoder.getVelocity();
-        double rotation = Units.rotationsToRadians(this.canCoder.getAbsolutePosition().getValueAsDouble() - Units.degreesToRotations(this.offset));
+        double rotation = Units.rotationsToRadians(this.canCoder.getAbsolutePosition().getValueAsDouble() - this.offset);
         return new SwerveModuleState(velocity, Rotation2d.fromRadians(rotation));
     }
 
