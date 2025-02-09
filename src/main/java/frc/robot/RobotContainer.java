@@ -12,6 +12,7 @@ import frc.robot.subsystems.swerve.SwerveDriveTrain;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.datalog.DataLog;
 
 
 public class RobotContainer {
@@ -41,11 +42,13 @@ public class RobotContainer {
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
 private final CommandXboxController elevatorController = new CommandXboxController(0);
-  Elevator elevator = new Elevator();
+  Elevator elevator = new Elevator(elevatorController);
 
   public RobotContainer() {
     // this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     this.configureBindings();
+    DataLogManager.start();
+
     
   }
 
@@ -58,15 +61,16 @@ private final CommandXboxController elevatorController = new CommandXboxControll
     // elevatorController.povDown().whileTrue(elevator.downPovElevator());
     // elevatorController.povDown().whileFalse(elevator.stopElevator());
     
-    elevatorController.axisGreaterThan(5, 0.1).onTrue(elevator.upElevator()); // If joystick is above 0.1, move up 
-    elevatorController.axisLessThan(5, -0.1).onTrue(elevator.downElevator()); // If joystick is below -0.1 move down
+    elevatorController.axisGreaterThan(5, 0.1).onTrue(elevator.moveElevator()); // If joystick is above 0.1, move up 
+    elevatorController.axisLessThan(5, -0.1).whileTrue(elevator.moveElevator()); // If joystick is below -0.1 move down
 
     Trigger elevStopB1 = elevatorController.axisLessThan(5, 0.1);
     //Elevator stop for bound 1 and 2 - between -0.1 and 0.1
     Trigger elevStopB2 = elevatorController.axisGreaterThan(5, -0.1);
 
+
     
-    elevStopB1.and(elevStopB2).toggleOnTrue(elevator.stopElevator()); 
+    elevStopB1.and(elevStopB2).onTrue(elevator.stopElevator()); 
     // if the joystick changes from moving to being still (in bounds), then stop the elevator. It only toggles when the state changes, not repeatidly
     elevatorController.x().onTrue(elevator.setHeightL4()); //on button press
     elevatorController.b().onTrue(elevator.stopElevator()); // elevator hard stop
