@@ -17,7 +17,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -55,8 +54,12 @@ public class DeepHang extends SubsystemBase {
 
     //3 rotations = 1 lead screw rotation? 3:1:circumference of lead screw?
     //diameter of lead screw = .75 inches
-    config.encoder.positionConversionFactor((Math.PI * Units.inchesToMeters(.75)) / 3); //in rotations
-    config.encoder.velocityConversionFactor((Math.PI * Units.inchesToMeters(.75)) / 3 / 60); //in rotations per second
+    //config.encoder.positionConversionFactor((Math.PI * Units.inchesToMeters(.75)) / 3); //in rotations?
+    //config.encoder.velocityConversionFactor((Math.PI * Units.inchesToMeters(.75)) / 3 / 60); //in rotations per second?
+    //parameter ~ 0.0003
+    config.encoder.positionConversionFactor(1/3); //in rotations
+    config.encoder.velocityConversionFactor(1/3/60); //in rotations per second
+    //parameter ~ 0.005
 
     config.idleMode(IdleMode.kBrake);
 
