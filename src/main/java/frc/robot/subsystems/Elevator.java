@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 //import for SparkMax
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.RelativeEncoder;
@@ -57,7 +59,10 @@ public class Elevator extends SubsystemBase {
     this.rel_encoder = motorE.getEncoder();
     config.closedLoop.p(.0085);
     SoftLimitConfig softLimitConfig = new SoftLimitConfig();
-
+    LimitSwitchConfig limitSwithConfig = new LimitSwitchConfig();
+    
+    limitSwithConfig.forwardLimitSwitchType(Type.kNormallyClosed);
+    limitSwithConfig.reverseLimitSwitchType(Type.kNormallyClosed);
 
     softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
     softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
@@ -69,8 +74,13 @@ public class Elevator extends SubsystemBase {
 
     //applies the soft limit configuration to the motor controller
     config.apply(softLimitConfig);
+    config.apply(limitSwithConfig);
 
     motorE.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+
+    upperLimit = motorE.getForwardLimitSwitch();
+    lowerLimit = motorE.getReverseLimitSwitch();
   }
   
  //command to stop the motor
@@ -80,9 +90,16 @@ public class Elevator extends SubsystemBase {
     }
     
   //resets encoders
-  public void initialize(){
+  public Command homing(){
+    return this.runOnce(() ->{
+      while (!isREVPressed()){
+        motorE.set(-0.2);
+      // PIDController.setReference(0, SparkMax.ControlType.kPosition);
+      }
       rel_encoder.setPosition(0);
-    }
+
+    });
+  }
   
   
   
@@ -99,18 +116,22 @@ public class Elevator extends SubsystemBase {
   }
 
 
-    public Command moveElevator() {
-
-
-
-
+    public Command moveElevatorUp() {
       return this.runOnce(()->{
-      
-          motorE.set(input * 0.3);
-          
+          if (input < 0  && (!this.isFWDPressed())){
+            motorE.set(input * 0.3);
+           }
+        });
+    }
 
-      });
-  }
+    public Command moveElevatorDown() {
+      return this.runOnce(()->{
+          if (input > 0 && (!this.isREVPressed())){
+            motorE.set(input * 0.3);
+          }
+        });
+    }
+
   public Command upPovElevator() {
 
     return this.runOnce(()->{
@@ -140,7 +161,15 @@ public class Elevator extends SubsystemBase {
       });
     }
 
-  
+  public boolean isFWDPressed(){
+    return upperLimit.isPressed();
+  }
+
+  public boolean isREVPressed(){
+    
+    return lowerLimit.isPressed();
+  }
+
   
   //SmartDashboard.putBoolean("Forward limit switch value", motorE.getSensorCollection().isFwdLimitSwitchClosed());
   //SmartDashboard.putBoolean("Reverse limit switch value", motorE.getSensorCollection().isRevLimitSwitchClosed());   

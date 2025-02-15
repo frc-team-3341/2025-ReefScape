@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.swerve.SwerveAutonomousCMD;
 import frc.robot.commands.swerve.SwerveTeleopCMD;
 import frc.robot.subsystems.Elevator;
@@ -50,16 +51,21 @@ private final CommandXboxController elevatorController = new CommandXboxControll
 
 
   private void configureBindings() {
-    // elevatorController.b().onTrue(elevator.stopElevator());
-    // elevatorController.povUp().whileTrue(elevator.upPovElevator());
-    // elevatorController.povUp().whileFalse(elevator.stopElevator());
+    elevatorController.a().onTrue(elevator.homing());
+
+        
+    elevatorController.axisGreaterThan(5, 0.1).whileTrue(elevator.moveElevatorUp()); // If joystick is above 0.1, move up 
+    elevatorController.axisLessThan(5, -0.1).whileTrue(elevator.moveElevatorDown()); // If joystick is below -0.1 move down
+
+    Trigger elevStopB1 = elevatorController.axisLessThan(5, 0.1);
+    //Elevator stop for bound 1 and 2 - between -0.1 and 0.1
+    Trigger elevStopB2 = elevatorController.axisGreaterThan(5, -0.1);
+
+
     
-    // elevatorController.povDown().whileTrue(elevator.downPovElevator());
-    // elevatorController.povDown().whileFalse(elevator.stopElevator());
-    
-    elevatorController.axisGreaterThan(5, 0.1).whileTrue(elevator.upElevator());
-    elevatorController.axisLessThan(5, 0.1).and(elevatorController.axisGreaterThan(5, -0.1)).whileTrue(elevator.stopElevator());
-    elevatorController.axisLessThan(5, -0.1).whileTrue(elevator.downElevator());
+    elevStopB1.and(elevStopB2).onTrue(elevator.stopElevator()); 
+    // if the joystick changes from moving to being still (in bounds), then stop the elevator. It only toggles when the state changes, not repeatidly
+    elevatorController.x().onTrue(elevator.setHeightL4()); //on button press
   }
 
 
