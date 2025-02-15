@@ -23,18 +23,23 @@ public class CoralManipulator extends SubsystemBase {
     public CoralManipulator() {
       abs_encoder = pivotMotor.getAbsoluteEncoder();
       SparkMaxConfig config = new SparkMaxConfig();
+      SparkMaxConfig config2 = new SparkMaxConfig();
+      config2.inverted(true);
+
       this.pidPivot = pivotMotor.getClosedLoopController();
       config.closedLoop.p(.01);
-      coralMotor1.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+      //coralMotor1.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       coralMotor2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+      coralMotor1.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
     }
     
     public Command pivotUp() {
-      return this.runOnce(() -> pivotMotor.set(1.5));
+      return this.runOnce(() -> pivotMotor.set(0.2));
   }
     public Command pivotDown() {
-      return this.runOnce(() -> pivotMotor.set(-1.5));
+      return this.runOnce(() -> pivotMotor.set(-0.2));
   }
   public Command pivotStop() {
     return this.runOnce(() -> pivotMotor.set(0.0));
@@ -49,8 +54,8 @@ public class CoralManipulator extends SubsystemBase {
 
     public Command intakeCoral() {
         return this.runOnce(() -> {
-          coralMotor1.set(1.5);
-          coralMotor2.set(1.5);
+          coralMotor1.set(.2);
+          coralMotor2.set(.2);
         });
        
 
@@ -58,8 +63,8 @@ public class CoralManipulator extends SubsystemBase {
 
     public Command releaseCoral() {
         return this.runOnce(() -> {
-        coralMotor1.set(1.5);
-        coralMotor2.set(1.5); 
+        coralMotor1.set(-0.2);
+        coralMotor2.set(-0.2); 
         });
 
     }
