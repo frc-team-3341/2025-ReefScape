@@ -12,14 +12,20 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 // import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 // import com.ctre.phoenix6.hardware.TalonFX;
 
+<<<<<<< Updated upstream
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
+=======
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
+>>>>>>> Stashed changes
 // import edu.wpi.first.wpilibj.motorcontrol.Spark;
 // import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.Elevator;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
@@ -81,6 +87,9 @@ public class Elevator extends SubsystemBase {
     });
   }
     public Command downElevator() {
+
+
+
 
       return this.runOnce(()->{
         if ((currentPos < max) && (input <= -0.2)) {
