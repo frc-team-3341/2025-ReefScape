@@ -1,53 +1,67 @@
 package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 public class CoralManipulator extends SubsystemBase {
-    private final SparkMax coralMotor = new SparkMax(21, MotorType.kBrushless);
-    private final SparkMax pivotMotor = new SparkMax(0, MotorType.kBrushless);
-    RelativeEncoder rel_encoder;
+//22: LEFT HAND SIDE 
+//21: PIVOT POINT
+//23: RIGHT HAND SIDE (looking from behind)
+    private final SparkMax coralMotor1 = new SparkMax(22, MotorType.kBrushless);
+    private final SparkMax coralMotor2 = new SparkMax(23, MotorType.kBrushless);
+    private final SparkMax pivotMotor = new SparkMax(21, MotorType.kBrushless);
+    AbsoluteEncoder abs_encoder;
     SparkClosedLoopController pidPivot;
-    double degrees = 180;
 
-
-  
     public CoralManipulator() {
-      rel_encoder = pivotMotor.getEncoder();
+      abs_encoder = pivotMotor.getAbsoluteEncoder();
       SparkMaxConfig config = new SparkMaxConfig();
       this.pidPivot = pivotMotor.getClosedLoopController();
       config.closedLoop.p(.01);
-      coralMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+      coralMotor1.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+      coralMotor2.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
-
+    
     public Command pivotUp() {
-      return this.runOnce(() -> pivotMotor.set(0.3));
+      return this.runOnce(() -> pivotMotor.set(1.5));
   }
     public Command pivotDown() {
-      return this.runOnce(() -> pivotMotor.set(-0.3));
+      return this.runOnce(() -> pivotMotor.set(-1.5));
   }
   public Command pivotStop() {
     return this.runOnce(() -> pivotMotor.set(0.0));
 }
     public Command stopCoral() {
-        return this.runOnce(() -> coralMotor.set(0.0));
+        return this.runOnce(() -> {
+          coralMotor1.set(0.0);
+          coralMotor2.set(0.0); 
+        });
+
     }
 
     public Command intakeCoral() {
-        return this.runOnce(() -> coralMotor.set(0.5));
+        return this.runOnce(() -> {
+          coralMotor1.set(1.5);
+          coralMotor2.set(1.5);
+        });
+       
+
     }
 
     public Command releaseCoral() {
-        return this.runOnce(() -> coralMotor.set(-0.5)); 
+        return this.runOnce(() -> {
+        coralMotor1.set(1.5);
+        coralMotor2.set(1.5); 
+        });
+
     }
 
     public Command spinPivot10() {
@@ -55,10 +69,10 @@ public class CoralManipulator extends SubsystemBase {
     }
 
     public void periodic() {
-      SmartDashboard.putNumber("Position in ticks", rel_encoder.getPosition()); 
+      SmartDashboard.putNumber("Position in ticks", abs_encoder.getPosition()); 
       SmartDashboard.putNumber("Setpoint Drive Velocity", pivotMotor.getBusVoltage());
-      SmartDashboard.putNumber("Setpoint Drive Velocity", coralMotor.getBusVoltage());
-      //  SmartDashboard.putNumber("Coral Angle", rel_encoder.getAngle());
+      SmartDashboard.putNumber("Setpoint Drive Velocity", coralMotor1.getBusVoltage());
+      SmartDashboard.putNumber("Setpoint Drive Velocity", coralMotor2.getBusVoltage());
     }
 }
 
