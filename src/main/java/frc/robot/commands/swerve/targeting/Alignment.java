@@ -25,7 +25,7 @@ public class Alignment extends Command{
     double lRotDirection;
     boolean state;
 
-    PIDController pid = new PIDController(1, 0, 0.05);
+    PIDController pid = new PIDController(0.6, 0, 0.02);
 
     public Alignment(SwerveDriveTrain swerve, Vision vision) {
         this.vision = vision;
@@ -108,7 +108,7 @@ public class Alignment extends Command{
         System.out.println("pid shiz: " + horizDirection);
         System.out.println(vision.getHorizontalDirection());
 
-        swerve.drive(new Translation2d(0, 3.441*horizDirection), 0.5*rotDirection, false, false);
+        swerve.drive(new Translation2d(0, 2.5*horizDirection), 0.3*rotDirection, false, false);
       }
       else if (!vision.targetDetected() && (vision.getLastHorizPosition() != 0 || vision.getLastRotAngle() != 0)) {
 

@@ -24,7 +24,7 @@ public class SwerveTeleopCMD extends Command {
    // private final int strafeAxis = XboxController.Axis.kLeftX.value; // Axis ID: 0
    // private final int rotationAxis = XboxController.Axis.kRightX.value; // Axis ID: 4
 
-   private double robotSpeed = 2;
+   private double robotSpeed = 0.7;
 
    private double xMult = 1.0;
    private double yMult = 1.0;
