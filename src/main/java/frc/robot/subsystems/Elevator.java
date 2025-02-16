@@ -59,22 +59,22 @@ public class Elevator extends SubsystemBase {
     this.rel_encoder = motorE.getEncoder();
     config.closedLoop.p(.0085);
     SoftLimitConfig softLimitConfig = new SoftLimitConfig();
-    LimitSwitchConfig limitSwithConfig = new LimitSwitchConfig();
+    // LimitSwitchConfig limitSwithConfig = new LimitSwitchConfig();
     
-    limitSwithConfig.forwardLimitSwitchType(Type.kNormallyClosed);
-    limitSwithConfig.reverseLimitSwitchType(Type.kNormallyClosed);
+    // limitSwithConfig.forwardLimitSwitchType(Type.kNormallyClosed);
+    // limitSwithConfig.reverseLimitSwitchType(Type.kNormallyClosed);
 
-    softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
-    softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
+    // softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
+    // softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
 
-    softLimitConfig.forwardSoftLimit(topSoftLimit);
-    softLimitConfig.reverseSoftLimit(0);
-    upperLimit = motorE.getForwardLimitSwitch();
-    lowerLimit = motorE.getReverseLimitSwitch();
+    // softLimitConfig.forwardSoftLimit(topSoftLimit);
+    // softLimitConfig.reverseSoftLimit(0);
+    // upperLimit = motorE.getForwardLimitSwitch();
+    // lowerLimit = motorE.getReverseLimitSwitch();
 
     //applies the soft limit configuration to the motor controller
     config.apply(softLimitConfig);
-    config.apply(limitSwithConfig);
+    // config.apply(limitSwithConfig);
 
     motorE.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -118,17 +118,17 @@ public class Elevator extends SubsystemBase {
 
     public Command moveElevatorUp() {
       return this.runOnce(()->{
-          if (input < 0  && (!this.isFWDPressed())){
+          // if (input < 0  && (!this.isFWDPressed())){
             motorE.set(input * 0.3);
-           }
+          //  }
         });
     }
 
     public Command moveElevatorDown() {
       return this.runOnce(()->{
-          if (input > 0 && (!this.isREVPressed())){
+          // if (input > 0 && (!this.isREVPressed())){
             motorE.set(input * 0.3);
-          }
+          // }
         });
     }
 

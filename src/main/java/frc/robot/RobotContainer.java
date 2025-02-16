@@ -25,7 +25,7 @@ public class RobotContainer {
   // ---------------------- END OF CONFIG SECTION --------------------------
 
   // Xbox + an additional one for PC use
-  private final Joystick drivingXbox = new Joystick(0);
+  // private final Joystick drivingXbox = new Joystick(0);
   //private final SendableChooser<Command> autoCommandChooser = new SendableChooser<>();
 
   // private final SwerveDriveTrain swerveDriveTrain = new SwerveDriveTrain(startpose,
