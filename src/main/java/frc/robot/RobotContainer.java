@@ -19,25 +19,25 @@ public class RobotContainer {
 
   // Defines starting pose of robot
   // TODO - Please remove this in future if developing for AprilTags
-  Pose2d startpose = new Pose2d(new Translation2d(0, 0), new Rotation2d());
+  //Pose2d startpose = new Pose2d(new Translation2d(0, 0), new Rotation2d());
   // add start pose if needed
   // ---------------------- END OF CONFIG SECTION --------------------------
 
   // Xbox + an additional one for PC use
-  private final Joystick drivingXbox = new Joystick(0);
-  private final Joystick hangXbox = new Joystick(1);
+  //private final Joystick drivingXbox = new Joystick(0);
+  private final Joystick hangXbox = new Joystick(0);
   //private final SendableChooser<Command> autoCommandChooser = new SendableChooser<>();
 
-  private final SwerveDriveTrain swerveDriveTrain = new SwerveDriveTrain(startpose,
-          Constants.SwerveModuleIOConfig.module0,
-          Constants.SwerveModuleIOConfig.module1,
-          Constants.SwerveModuleIOConfig.module2,
-          Constants.SwerveModuleIOConfig.module3);
+  // private final SwerveDriveTrain swerveDriveTrain = new SwerveDriveTrain(startpose,
+  //         Constants.SwerveModuleIOConfig.module0,
+  //         Constants.SwerveModuleIOConfig.module1,
+  //         Constants.SwerveModuleIOConfig.module2,
+  //         Constants.SwerveModuleIOConfig.module3);
 
-  private final SwerveTeleopCMD swerveTeleopCMD = new SwerveTeleopCMD(this.swerveDriveTrain, this.drivingXbox);
+  // private final SwerveTeleopCMD swerveTeleopCMD = new SwerveTeleopCMD(this.swerveDriveTrain, this.drivingXbox);
 
-  private final SwerveAutonomousCMD serveAutoCMD = new SwerveAutonomousCMD(this.swerveDriveTrain,
-          Constants.allianceEnabled);
+  // private final SwerveAutonomousCMD serveAutoCMD = new SwerveAutonomousCMD(this.swerveDriveTrain,
+  //         Constants.allianceEnabled);
   // private TestFourModules allFour;
   // private CrabDrive crabDrive;
   
@@ -45,8 +45,9 @@ public class RobotContainer {
 
 
   public RobotContainer() {
-    this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
+    // this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
     this.configureBindings();
+    this.configureDeepHang();
   }
 
   public void configureDeepHang() {
@@ -66,11 +67,11 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return serveAutoCMD;
+    return null;
     
   }
 
   public void initCommandInTeleop() {
-    swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
+    // swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
   }
 }
