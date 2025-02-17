@@ -25,12 +25,16 @@ public class Vision extends SubsystemBase{
     AprilTagFields field;
     AprilTagFieldLayout fieldLayout;
     Transform3d targetData;
+    
 
     double[] array = {-0.03, 0.03};
     XboxController cont = new XboxController(0);
+    Joystick joy = new Joystick(0);
 
     ArrayList<Double> horizVals = new ArrayList<Double>();
     ArrayList<Double> rotVals = new ArrayList<Double>();
+
+    double pidVal;
 
     public Vision(PhotonCamera camera) {
         this.camera = camera;
@@ -152,34 +156,54 @@ public class Vision extends SubsystemBase{
    
 
     public boolean rotationalAtSetpoint() {
-        if (getZAngle() < 178 || getZAngle() > 182) {
+        if (getZAngle() < 179 || getZAngle() > 181) {
             return false;
         }
         return true;
     }
+
+    // public void switchHorizontalSetpoint() {
+    //     if(cont.getLeftBumperButtonPressed()) {
+    //         array[0] = -0.35;
+    //         array[1] = -0.27;
+    //     }
+    //     else if(cont.getRightBumperButtonPressed()) {
+    //         array[0] = 0.3;
+    //         array[1] = 0.35;
+    //     }
+    //     else if(cont.getBButtonPressed()) {
+    //         array[0] = -0.03;
+    //         array[1] = 0.03;
+    //     }
+    // }
 
     public void switchHorizontalSetpoint() {
         if(cont.getLeftBumperButtonPressed()) {
-            array[0] = -0.35;
-            array[1] = -0.27;
+            pidVal = -0.31;
         }
         else if(cont.getRightBumperButtonPressed()) {
-            array[0] = 0.3;
-            array[1] = 0.35;
+            pidVal = 0.31;
         }
         else if(cont.getBButtonPressed()) {
-            array[0] = -0.03;
-            array[1] = 0.03;
+            pidVal = 0;
         }
     }
 
+    
 
-    public boolean horizontalAtSetpoint() {
-        if (getHorizontalDisplacement() < array[0] || getHorizontalDisplacement() > array[1]) {
-            return false;
-        }
-        return true;
+    public double getSetpoint() {
+        return pidVal;
     }
+
+
+
+
+    // public boolean horizontalAtSetpoint() {
+    //     if (getHorizontalDisplacement() < array[0] || getHorizontalDisplacement() > array[1]) {
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     public double getLastHorizPosition() {
         return horizVals.get(0);
@@ -211,10 +235,6 @@ public class Vision extends SubsystemBase{
         // SmartDashboard.putNumber("axis val 2", cont.getRawAxis(1));
         // SmartDashboard.putNumber("axis val 3", cont.getRawAxis(4));
         // SmartDashboard.putNumber("axis val 4", cont.getRawAxis(5));
-        SmartDashboard.putNumber("horiz direction", getHorizontalDirection());
-
-
-
 
         //output values to SmartDashboard/Shuffleboard
         // SmartDashboard.putBoolean("Target Detected", targetDetected());

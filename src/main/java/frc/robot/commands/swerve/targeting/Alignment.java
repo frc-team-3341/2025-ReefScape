@@ -13,27 +13,23 @@ import frc.robot.subsystems.swerve.SwerveDriveTrain;
 import frc.robot.subsystems.swerve.targeting.Vision;
 
 public class Alignment extends Command{
-    SwerveTeleopCMD teleop;
     XboxController xbox = new XboxController(0);
     SwerveDriveTrain swerve;
     Vision vision;
-    Joystick joy = new Joystick(0);
 
     double rotDirection;
     double horizDirection;
     double lHorizDirection;
     double lRotDirection;
-    boolean state;
 
-    PIDController pid = new PIDController(0.6, 0, 0.02);
+    PIDController pid = new PIDController(0.5, 0, 0.025);
 
     public Alignment(SwerveDriveTrain swerve, Vision vision) {
         this.vision = vision;
         this.swerve = swerve;
-        teleop = new SwerveTeleopCMD(swerve, joy);
 
         addRequirements(this.vision, this.swerve);
-        pid.setTolerance(0.02);
+        pid.setTolerance(0.03);
     }
 
     @Override
@@ -98,17 +94,22 @@ public class Alignment extends Command{
 
     @Override
     public void execute() {
-
+      
+      //switch setpoint based on driver input
       vision.switchHorizontalSetpoint();
-
-      if (vision.targetDetected() && (!vision.rotationalAtSetpoint() || !vision.horizontalAtSetpoint()) && !vision.joystickHeld()) { 
+      
+      //if  a target is in view, and the driver is not driving, run autonomous alignment
+      if (vision.targetDetected() && !vision.joystickHeld()) { 
         rotDirection = vision.getRotationalDirection();
-        horizDirection = -pid.calculate(vision.getHorizontalDisplacement(), 0);
+        horizDirection = -pid.calculate(vision.getHorizontalDisplacement(), vision.getSetpoint());
 
-        System.out.println("pid shiz: " + horizDirection);
-        System.out.println(vision.getHorizontalDirection());
-
-        swerve.drive(new Translation2d(0, 2.5*horizDirection), 0.3*rotDirection, false, false);
+        System.out.println(horizDirection);
+        
+        //rotational speed is proportional to horizontal driving speed when output is small to prevent robot from rotating out of view
+        if (Math.abs(horizDirection) < 0.15) {
+            swerve.drive(new Translation2d(0, 3.5*horizDirection), Math.abs(horizDirection)*rotDirection*3.5, false, false);
+        }
+        swerve.drive(new Translation2d(0, 3.5*horizDirection), 0.3*rotDirection, false, false);
       }
       else if (!vision.targetDetected() && (vision.getLastHorizPosition() != 0 || vision.getLastRotAngle() != 0)) {
 
@@ -132,7 +133,7 @@ public class Alignment extends Command{
       }
       if (vision.joystickHeld()) {
        
-        swerve.drive(new Translation2d(-1.5*xbox.getRawAxis(1), -1.5*xbox.getRawAxis(0)), -1.5*xbox.getRawAxis(4), false, false);
+        swerve.drive(new Translation2d(-1.0*xbox.getRawAxis(1), -1.0*xbox.getRawAxis(0)), -1.0*xbox.getRawAxis(4), false, false);
       }
     }
 
