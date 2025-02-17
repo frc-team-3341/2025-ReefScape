@@ -31,7 +31,7 @@ import frc.robot.subsystems.Elevator;
 
 
 public class Elevator extends SubsystemBase {
-  final SparkMax motorE = new SparkMax(20, MotorType.kBrushless);
+  final SparkMax motorE = new SparkMax(25, MotorType.kBrushless);
   SparkClosedLoopController PIDController;
   
   RelativeEncoder rel_encoder;
@@ -40,41 +40,38 @@ public class Elevator extends SubsystemBase {
 
   double input;
   double currentPos;
-  
-  double axleD = 0.125;
-  double distance = 10;
-  double circ = Math.PI * axleD;
-  double revolutions = distance/circ;
-  double max = 50;
-  double min = 0;
+
+
   public SparkLimitSwitch upperLimit;
   public SparkLimitSwitch lowerLimit;
-  
+ double inchesPerRevolution = 5.5;
   /** Creates a new ClimbTeleop. */
   public Elevator(CommandXboxController elevatorController) {
     controller = elevatorController;
-    double topSoftLimit = 15;
+   
     SparkMaxConfig config = new SparkMaxConfig();
     this.PIDController = motorE.getClosedLoopController();
     this.rel_encoder = motorE.getEncoder();
     config.closedLoop.p(.0085);
+    double topSoftLimit = 5.5;
     SoftLimitConfig softLimitConfig = new SoftLimitConfig();
-    // LimitSwitchConfig limitSwithConfig = new LimitSwitchConfig();
+    LimitSwitchConfig limitSwithConfig = new LimitSwitchConfig();
     
-    // limitSwithConfig.forwardLimitSwitchType(Type.kNormallyClosed);
-    // limitSwithConfig.reverseLimitSwitchType(Type.kNormallyClosed);
+    limitSwithConfig.forwardLimitSwitchType(Type.kNormallyClosed);
+    limitSwithConfig.reverseLimitSwitchType(Type.kNormallyClosed);
 
-    // softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
-    // softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
+    softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
+    softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
 
-    // softLimitConfig.forwardSoftLimit(topSoftLimit);
-    // softLimitConfig.reverseSoftLimit(0);
-    // upperLimit = motorE.getForwardLimitSwitch();
-    // lowerLimit = motorE.getReverseLimitSwitch();
+    softLimitConfig.forwardSoftLimit(5.5);
+    softLimitConfig.reverseSoftLimit(0);
+    upperLimit = motorE.getForwardLimitSwitch();
+    lowerLimit = motorE.getReverseLimitSwitch();
 
     //applies the soft limit configuration to the motor controller
+    // config.smartCurrentLimit(20);
     config.apply(softLimitConfig);
-    // config.apply(limitSwithConfig);
+    config.apply(limitSwithConfig);
 
     motorE.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -88,7 +85,6 @@ public class Elevator extends SubsystemBase {
         return this.runOnce(() -> motorE.set(0));
         
     }
-    
   //resets encoders
   public Command homing(){
     return this.runOnce(() ->{
@@ -100,9 +96,6 @@ public class Elevator extends SubsystemBase {
 
     });
   }
-  
-  
-  
   // Called when the command is initially scheduled.
   @Override
   public void periodic(){
@@ -118,9 +111,9 @@ public class Elevator extends SubsystemBase {
 
     public Command moveElevatorUp() {
       return this.runOnce(()->{
-          // if (input < 0  && (!this.isFWDPressed())){
+           //if (input < 0  && (!this.isFWDPressed())){
             motorE.set(input * 0.3);
-          //  }
+         // }
         });
     }
 
@@ -132,29 +125,29 @@ public class Elevator extends SubsystemBase {
         });
     }
 
-  public Command upPovElevator() {
+  // public Command upPovElevator() {
 
-    return this.runOnce(()->{
-      // if (currentPos > min){
-        motorE.set(0.3);
-        System.out.println("Elevator up");
-      // }     
-    });
-  }
-  public Command downPovElevator() {
-    return this.runOnce(()->{
-      // if (currentPos < max) {
-        motorE.set(-0.3);
-        System.out.println("Elevator down");
-      // }     
-    });
-  }
+  //   return this.runOnce(()->{
+  //     // if (currentPos > min){
+  //       motorE.set(0.3);
+  //       System.out.println("Elevator up");
+  //     // }     
+  //   });
+  // }
+  // public Command downPovElevator() {
+  //   return this.runOnce(()->{
+  //     // if (currentPos < max) {
+  //       motorE.set(-0.3);
+  //       System.out.println("Elevator down");
+  //     // }     
+  //   });
+  // }
     public Command setHeightL4(){
       return this.runOnce(()->{
         motorE.set(0);
         // PIDController.setReference(0, SparkMax.ControlType.kPosition);
 
-        PIDController.setReference(10, SparkMax.ControlType.kPosition);
+        PIDController.setReference(2, SparkMax.ControlType.kPosition);
         System.out.println("Elevator setpoint");
         //Sets the setpoint to 10 rotations. PIDController needs to be correctly configured
         //https://docs.revrobotics.com/revlib/spark/closed-loop/position-control-mode
