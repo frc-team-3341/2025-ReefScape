@@ -48,7 +48,7 @@ public class DeepHang extends SubsystemBase {
 
   public DeepHang() {
 
-    //imu = new AHRS(NavXComType.kMXP_SPI);
+    imu = new AHRS(NavXComType.kMXP_SPI);
 
     deepHang = new SparkMax(30, MotorType.kBrushless);
     hangEncoder = deepHang.getEncoder();
@@ -65,23 +65,26 @@ public class DeepHang extends SubsystemBase {
     SoftLimitConfig softLimitConfig = new SoftLimitConfig();
 
 
-    // LimitSwitchConfig limitSwitchConfig = new LimitSwitchConfig();
-    // limitSwitchConfig.forwardLimitSwitchType(Type.kNormallyClosed);
-    // limitSwitchConfig.forwardLimitSwitchType(Type.kNormallyClosed);
-    // upperLimit = deepHang.getForwardLimitSwitch();
-    // lowerLimit = deepHang.getReverseLimitSwitch();
+    LimitSwitchConfig limitSwitchConfig = new LimitSwitchConfig();
+    limitSwitchConfig.forwardLimitSwitchType(Type.kNormallyClosed);
+    limitSwitchConfig.reverseLimitSwitchType(Type.kNormallyClosed);
+    limitSwitchConfig.forwardLimitSwitchEnabled(true);
+    limitSwitchConfig.reverseLimitSwitchEnabled(true);
+    upperLimit = deepHang.getForwardLimitSwitch();
+    lowerLimit = deepHang.getReverseLimitSwitch();
 
 
     softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
     softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
 
     softLimitConfig.forwardSoftLimit(20); //sets the forward soft limit to 0 rotations
-    softLimitConfig.reverseSoftLimit(0); //sets the reverse soft limit to 20 rotations
+    softLimitConfig.reverseSoftLimit(-20); //sets the reverse soft limit to 20 rotations
 
   
     //applies the soft limit configuration to the motor controller
-    config.apply(softLimitConfig);
+    // config.apply(softLimitConfig);
     // config.apply(limitSwitchConfig); //applies the limit switch config to the sparkmax config object
+    config.smartCurrentLimit(10);
 
     //configures the motor controller with the specified configuration
     deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
@@ -171,16 +174,18 @@ public class DeepHang extends SubsystemBase {
   }
 
   public Command fwd() {
-    return this.runOnce(() -> {
-      reverse = false;
-      this.setSpeed(); //cw away from where the motor is facing (inward)
+    return this.run(() -> {
+      deepHang.set(.2);
+      //reverse = false;
+      //this.setSpeed(); //cw away from where the motor is facing (inward)
     });
   }
 
   public Command rev() {
-    return this.runOnce(() -> {
-      reverse = true;
-      this.setSpeed(); //ccw away from where the motor is facing (inward)
+    return this.run(() -> {
+      deepHang.set(-.2);
+      //reverse = true;
+      //this.setSpeed(); //ccw away from where the motor is facing (inward)
     });
   }
 
@@ -189,12 +194,4 @@ public class DeepHang extends SubsystemBase {
       this.setSpeed(0);
     });
   }
-
-   // public boolean isFWDLimitPressed(){
-  //   return upperLimit.isPressed();
-  // }
-
-  // public boolean isREVPLimitressed(){
-  //   return lowerLimit.isPressed();
-  // }
 }
