@@ -22,7 +22,9 @@ public class Alignment extends Command{
     double lHorizDirection;
     double lRotDirection;
 
-    PIDController pid = new PIDController(0.5, 0, 0.025);
+    PIDController pid = new PIDController(1.0, 0, 0.033);
+
+    // PIDController pid2 = new PIDController(0.5, 0, 0.02);
 
     public Alignment(SwerveDriveTrain swerve, Vision vision) {
         this.vision = vision;
@@ -101,15 +103,20 @@ public class Alignment extends Command{
       //if  a target is in view, and the driver is not driving, run autonomous alignment
       if (vision.targetDetected() && !vision.joystickHeld()) { 
         rotDirection = vision.getRotationalDirection();
+
+        // if(vision.getSetpoint() == 0) {
+        //     horizDirection = -pid.calculate(vision.getHorizontalDisplacement(), vision.getSetpoint());
+        // }
+        // horizDirection = -pid2.calculate(vision.getHorizontalDisplacement(), vision.getSetpoint());
         horizDirection = -pid.calculate(vision.getHorizontalDisplacement(), vision.getSetpoint());
 
-        System.out.println(horizDirection);
-        
         //rotational speed is proportional to horizontal driving speed when output is small to prevent robot from rotating out of view
-        if (Math.abs(horizDirection) < 0.15) {
-            swerve.drive(new Translation2d(0, 3.5*horizDirection), Math.abs(horizDirection)*rotDirection*3.5, false, false);
+        if (Math.abs(horizDirection) < 0.01) {
+            swerve.drive(new Translation2d(0, 5.0*horizDirection), Math.abs(horizDirection)*rotDirection*120, false, false);
+            System.out.println("close: " + (5.0*horizDirection));
         }
-        swerve.drive(new Translation2d(0, 3.5*horizDirection), 0.3*rotDirection, false, false);
+        swerve.drive(new Translation2d(0, 3.0*horizDirection), 0.2*rotDirection, false, false);
+        System.out.println("far: " + (3.0*horizDirection));
       }
       else if (!vision.targetDetected() && (vision.getLastHorizPosition() != 0 || vision.getLastRotAngle() != 0)) {
 
@@ -133,7 +140,7 @@ public class Alignment extends Command{
       }
       if (vision.joystickHeld()) {
        
-        swerve.drive(new Translation2d(-1.0*xbox.getRawAxis(1), -1.0*xbox.getRawAxis(0)), -1.0*xbox.getRawAxis(4), false, false);
+        swerve.drive(new Translation2d(-0.6*xbox.getRawAxis(1), -0.6*xbox.getRawAxis(0)), -1.0*xbox.getRawAxis(4), false, false);
       }
     }
 

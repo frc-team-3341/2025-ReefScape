@@ -198,12 +198,12 @@ public class Vision extends SubsystemBase{
 
 
 
-    // public boolean horizontalAtSetpoint() {
-    //     if (getHorizontalDisplacement() < array[0] || getHorizontalDisplacement() > array[1]) {
-    //         return false;
-    //     }
-    //     return true;
-    // }
+    public boolean horizontalAtSetpoint() {
+        if (getHorizontalDisplacement() < array[0] || getHorizontalDisplacement() > array[1]) {
+            return false;
+        }
+        return true;
+    }
 
     public double getLastHorizPosition() {
         return horizVals.get(0);
@@ -212,6 +212,7 @@ public class Vision extends SubsystemBase{
     public double getLastRotAngle() {
         return rotVals.get(0);
     }
+
 
     public boolean joystickHeld() {
         if (Math.abs(cont.getRawAxis(0)) > 0.1 ||  
