@@ -6,6 +6,8 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -57,20 +59,13 @@ public class CoralManipulator extends SubsystemBase {
     pivotConfig.closedLoop.p(.01);
     pivotConfig.softLimit.forwardSoftLimitEnabled(true);
     pivotConfig.softLimit.reverseSoftLimitEnabled(true);
-    pivotConfig.upperLimit.reserseUpperLimitEnabled(true);
 
-    pivotConfig.softLimit
-        .forwardSoftLimit(50)
-        .reverseSoftLimit(-50)
-
-        .forwardSoftLimitEnabled(true)
-        .reverseSoftLimitEnabled(true);
-    upperLimit = pivotMotor.getForwardLimitSwitch();
-    lowerLimit = pivotMotor.getReverseLimitSwitch();
-        config.apply(pivotConfig);
-        config.apply(pivotConfig);
+    LimitSwitchConfig upperLimitSwitch = new LimitSwitchConfig();
+    LimitSwitchConfig lowerLimitSwitch = new LimitSwitchConfig();
     
-
+    upperLimitSwitch.forwardLimitSwitchType(Type.kNormallyClosed);
+    upperLimitSwitch.reverseLimitSwitchType(Type.kNormallyClosed);
+    
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
   }
