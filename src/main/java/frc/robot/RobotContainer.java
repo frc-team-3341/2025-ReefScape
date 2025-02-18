@@ -65,7 +65,8 @@ private final CommandXboxController elevatorController = new CommandXboxControll
     
     elevStopB1.and(elevStopB2).onTrue(elevator.stopElevator()); 
     // if the joystick changes from moving to being still (in bounds), then stop the elevator. It only toggles when the state changes, not repeatidly
-    elevatorController.x().onTrue(elevator.setHeightL4()); //on button press
+    elevatorController.x().onTrue(elevator.setHeightL2()); //on button press
+    elevatorController.y().onTrue(elevator.setHeightL3());
   }
 
 

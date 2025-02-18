@@ -53,23 +53,23 @@ public class Elevator extends SubsystemBase {
     this.PIDController = motorE.getClosedLoopController();
     this.rel_encoder = motorE.getEncoder();
     config.closedLoop.p(.0085);
-    double topSoftLimit = 5.5;
+    double topSoftLimit = 0.122;
     SoftLimitConfig softLimitConfig = new SoftLimitConfig();
     LimitSwitchConfig limitSwithConfig = new LimitSwitchConfig();
     
     limitSwithConfig.forwardLimitSwitchType(Type.kNormallyClosed);
     limitSwithConfig.reverseLimitSwitchType(Type.kNormallyClosed);
 
-    softLimitConfig.forwardSoftLimitEnabled(true); //enables the forward soft limit
-    softLimitConfig.reverseSoftLimitEnabled(true); //enables the reverse soft limit
+    softLimitConfig.forwardSoftLimitEnabled(false); //enables the forward soft limit
+    softLimitConfig.reverseSoftLimitEnabled(false); //enables the reverse soft limit
 
-    softLimitConfig.forwardSoftLimit(5.5);
-    softLimitConfig.reverseSoftLimit(0);
+    softLimitConfig.forwardSoftLimit(0);
+    softLimitConfig.reverseSoftLimit(-330);
     upperLimit = motorE.getForwardLimitSwitch();
     lowerLimit = motorE.getReverseLimitSwitch();
 
     //applies the soft limit configuration to the motor controller
-    // config.smartCurrentLimit(20);
+    config.smartCurrentLimit(10);
     config.apply(softLimitConfig);
     config.apply(limitSwithConfig);
 
@@ -99,32 +99,29 @@ public class Elevator extends SubsystemBase {
   // Called when the command is initially scheduled.
   @Override
   public void periodic(){
-    
-   
     input = controller.getRightY();
     currentPos = rel_encoder.getPosition();     
-    SmartDashboard.putNumber("Current position in ticks",currentPos);
-    SmartDashboard.putNumber("CurrentPos", rel_encoder.getPosition());
-    //PIDController.setReference(1, SparkMax.ControlType.kPosition);
+    SmartDashboard.putNumber("Current position in revolutions",currentPos);
+    SmartDashboard.putBoolean("is top limit pressed",isFWDPressed());
+    SmartDashboard.putBoolean("is bottom limit pressed",isREVPressed());
   }
-
 
     public Command moveElevatorUp() {
       return this.runOnce(()->{
            //if (input < 0  && (!this.isFWDPressed())){
             motorE.set(input * 0.3);
+            System.out.println("isMoving");
          // }
         });
     }
-
     public Command moveElevatorDown() {
       return this.runOnce(()->{
           // if (input > 0 && (!this.isREVPressed())){
             motorE.set(input * 0.3);
+            System.out.println("isMoving");
           // }
         });
     }
-
   // public Command upPovElevator() {
 
   //   return this.runOnce(()->{
@@ -142,29 +139,39 @@ public class Elevator extends SubsystemBase {
   //     // }     
   //   });
   // }
-    public Command setHeightL4(){
+    public Command setHeightL2(){
       return this.runOnce(()->{
-        motorE.set(0);
-        // PIDController.setReference(0, SparkMax.ControlType.kPosition);
-
-        PIDController.setReference(2, SparkMax.ControlType.kPosition);
-        System.out.println("Elevator setpoint");
-        //Sets the setpoint to 10 rotations. PIDController needs to be correctly configured
+        motorE.set(0.3);
+        PIDController.setReference(261.27, SparkMax.ControlType.kPosition);
+        System.out.println("Elevator L2");
         //https://docs.revrobotics.com/revlib/spark/closed-loop/position-control-mode
       });
     }
 
-  public boolean isFWDPressed(){
-    return upperLimit.isPressed();
-  }
+      public Command setHeightL3(){
+        return this.runOnce(()->{
+          motorE.set(0.3);
+          PIDController.setReference(295.082, SparkMax.ControlType.kPosition);
+          System.out.println("Elevator L3");
+  
+        });
+      }
 
-  public boolean isREVPressed(){
-    
-    return lowerLimit.isPressed();
-  }
+    boolean isREVPressed(){
+      return lowerLimit.isPressed();
+    }
+    boolean isFWDPressed(){
+      return upperLimit.isPressed();
+    }
+
+
+    }
+
+
+ 
 
   
   //SmartDashboard.putBoolean("Forward limit switch value", motorE.getSensorCollection().isFwdLimitSwitchClosed());
   //SmartDashboard.putBoolean("Reverse limit switch value", motorE.getSensorCollection().isRevLimitSwitchClosed());   
 
-}
+
