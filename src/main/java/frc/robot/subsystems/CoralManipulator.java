@@ -55,6 +55,10 @@ public class CoralManipulator extends SubsystemBase {
     SparkMaxConfig pivotConfig = new SparkMaxConfig();
     
     pivotConfig.closedLoop.p(.01);
+    pivotConfig.softLimit.forwardSoftLimitEnabled(true);
+    pivotConfig.softLimit.reverseSoftLimitEnabled(true);
+    pivotConfig.upperLimit.reserseUpperLimitEnabled(true);
+
     pivotConfig.softLimit
         .forwardSoftLimit(50)
         .reverseSoftLimit(-50)
