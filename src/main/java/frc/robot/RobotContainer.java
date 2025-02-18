@@ -41,10 +41,10 @@ public class RobotContainer {
   // // private CrabDrive crabDrive;
 
 
-private final CommandXboxController xboxController = new CommandXboxController(0);
+private final CommandXboxController mechController = new CommandXboxController(0);
 
 
-  CoralManipulator coralManipulator = new CoralManipulator(xboxController);
+  CoralManipulator coralManipulator = new CoralManipulator();
 
   public RobotContainer() {
     //this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
@@ -52,13 +52,14 @@ private final CommandXboxController xboxController = new CommandXboxController(0
   }
 
   private void configureBindings() {
-    xboxController.button(3).onTrue(coralManipulator.stopCoral());
-    xboxController.button(1).onTrue(coralManipulator.intakeCoral());
-    xboxController.button(2).onTrue(coralManipulator.releaseCoral());
-    xboxController.axisGreaterThan(2, 0).whileTrue(coralManipulator.pivotStop());
-    xboxController.povUp().onTrue(coralManipulator.pivotUp());
-    xboxController.povDown().onTrue(coralManipulator.pivotDown());
-    xboxController.button(0).onTrue(coralManipulator.spinPivot());
+    mechController.x().onTrue(coralManipulator.stopCoral());
+    mechController.y().onTrue(coralManipulator.intakeCoral());
+    mechController.b().onTrue(coralManipulator.releaseCoral());
+    mechController.axisGreaterThan(2, 0).whileTrue(coralManipulator.pivotStop());
+    mechController.povUp().onTrue(coralManipulator.pivotL4());
+    mechController.povDown().onTrue(coralManipulator.pivotDown());
+    mechController.povRight().onTrue(coralManipulator.pivotIntake());
+    mechController.a().onTrue(coralManipulator.spinPivot());
   }
 
   public Command getAutonomousCommand() {
