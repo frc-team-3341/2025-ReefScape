@@ -100,24 +100,24 @@ public class CoralManipulator extends SubsystemBase {
     pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
   }
-
-  public Command pivotL4() {
-   return this.runOnce(() -> {
-     this.setpoint = 0.05;
-     this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
-   });
- }
- public Command pivotIntake() {
-   return this.runOnce(() -> {
-     this.setpoint = 0.35;
-     this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
-   });
- }
- public Command pivotDown() {
-   return this.runOnce(() -> {
-     this.setpoint = 0.15;
-     this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
-   });  }
+    
+   public Command pivotL4() {
+    return this.runOnce(() -> {
+      this.setpoint = 0.05;
+      this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
+    });
+  }
+  public Command pivotIntake() {
+    return this.runOnce(() -> {
+      this.setpoint = 0.35;
+      this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
+    });
+  }
+  public Command pivotDown() {
+    return this.runOnce(() -> {
+      this.setpoint = 0.15;
+      this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
+    });  }
 
  public Command pivotStop() {
    return this.runOnce(() -> pivotMotor.set(0.0));
