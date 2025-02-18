@@ -70,16 +70,21 @@ public class CoralManipulator extends SubsystemBase {
 
   }
     
-   public Command pivotUp() {
+   public Command pivotL4() {
     return this.runOnce(() -> {
-      this.setpoint = 0.5;
+      this.setpoint = 0.05;
       this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
     });
   }
-
+  public Command pivotIntake() {
+    return this.runOnce(() -> {
+      this.setpoint = 0.35;
+      this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
+    });
+  }
   public Command pivotDown() {
     return this.runOnce(() -> {
-      this.setpoint = 0.5;
+      this.setpoint = 0.15;
       this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
     });  }
 

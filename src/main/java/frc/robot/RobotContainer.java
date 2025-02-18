@@ -56,8 +56,9 @@ private final CommandXboxController xboxController = new CommandXboxController(0
     xboxController.button(1).onTrue(coralManipulator.intakeCoral());
     xboxController.button(2).onTrue(coralManipulator.releaseCoral());
     xboxController.axisGreaterThan(2, 0).whileTrue(coralManipulator.pivotStop());
-    xboxController.povUp().onTrue(coralManipulator.pivotUp());
+    xboxController.povUp().onTrue(coralManipulator.pivotL4());
     xboxController.povDown().onTrue(coralManipulator.pivotDown());
+    xboxController.povRight().onTrue(coralManipulator.pivotIntake());
     xboxController.button(0).onTrue(coralManipulator.spinPivot());
   }
 
