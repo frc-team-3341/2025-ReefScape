@@ -172,8 +172,6 @@ public class DeepHang extends SubsystemBase {
 
   public Command fwd() {
     return this.runOnce(() -> {
-      System.out.println("TESTING AGAIN");
-      deepHang.set(0.4);
       reverse = false;
       this.setSpeed(); //cw away from where the motor is facing (inward)
     });
@@ -181,7 +179,6 @@ public class DeepHang extends SubsystemBase {
 
   public Command rev() {
     return this.runOnce(() -> {
-      System.out.println("TESTING AGAIN 2");
       reverse = true;
       this.setSpeed(); //ccw away from where the motor is facing (inward)
     });
