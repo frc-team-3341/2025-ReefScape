@@ -9,8 +9,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveDriveTrain;
 import frc.util.lib.AsymmetricLimiter;
 import frc.util.lib.ArcadeJoystickUtil;
-import frc.robot.Robot;
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class SwerveTeleopCMD extends Command {
    // Initialize empty swerveDriveTrain object
@@ -18,19 +16,12 @@ public class SwerveTeleopCMD extends Command {
    private final Joystick joystick;
    private boolean robotCentric = false;
 
-
-    // Define axises for using joystick
-   // private final int translationAxis = XboxController.Axis.kLeftY.value; // Axis ID: 1
-   // private final int strafeAxis = XboxController.Axis.kLeftX.value; // Axis ID: 0
-   // private final int rotationAxis = XboxController.Axis.kRightX.value; // Axis ID: 4
-
-   private double robotSpeed = 2;
+   private double robotSpeed = .8;
 
    private double xMult = 1.0;
    private double yMult = 1.0;
 
    private ArcadeJoystickUtil joyUtil = new ArcadeJoystickUtil();
-
 
    // Slew rate limit controls
    // Positive limit ensures smooth acceleration (1000 * dt * dControl)
@@ -52,16 +43,12 @@ public class SwerveTeleopCMD extends Command {
 
    @Override
    public void execute() {
-
+      //Flip all controller input since xbox forward is negative
       double xVal = -this.joystick.getRawAxis(XboxController.Axis.kLeftY.value);
       double yVal = -this.joystick.getRawAxis(XboxController.Axis.kLeftX.value);
       double rotation = -this.joystick.getRawAxis(XboxController.Axis.kRightX.value);
       double translationRightTrigger = this.joystick.getRawAxis(XboxController.Axis.kRightTrigger.value);
       //this.robotCentric = this.joystick.getRawButtonPressed(XboxController.Button.kX.value);
-
-      // Get values of controls and apply deadband
-      // double xVal = -x; // Flip for XBox support
-      // double yVal = y;
 
       double rightTriggerVal = Math.abs(translationRightTrigger);
 
@@ -74,6 +61,7 @@ public class SwerveTeleopCMD extends Command {
          rightTriggerVal = 1.0 - rightTriggerVal;
       }
 
+      //Apply a deadband, if input is less than deadband then return zero else return input
       xVal = MathUtil.applyDeadband(xVal, Constants.SwerveConstants.deadBand);
       yVal = MathUtil.applyDeadband(yVal, Constants.SwerveConstants.deadBand);
 
@@ -82,6 +70,7 @@ public class SwerveTeleopCMD extends Command {
       // Apply rate limiting to rotation
       rotationVal = this.rotationLimiter.calculate(rotationVal);
 
+      //Convert input from controller into polar coordinates
       double[] polarCoords = joyUtil.regularGamePadControls(xVal, yVal, Constants.SwerveConstants.maxChassisTranslationalSpeed);
 
       double newHypot = robotSpeed*translationLimiter.calculate(polarCoords[0]);
@@ -89,6 +78,7 @@ public class SwerveTeleopCMD extends Command {
       // Deadband should be applied after calculation of polar coordinates
       newHypot = MathUtil.applyDeadband(newHypot, Constants.SwerveConstants.deadBand);
 
+      //Through magic we can convert the controller input into a vector that can be applied to the robot
       double correctedX = rightTriggerVal * xMult * newHypot * Math.cos(polarCoords[1]);
       double correctedY =  rightTriggerVal * yMult * newHypot * Math.sin(polarCoords[1]);
 

@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.swerve.SwerveModuleIOSim;
 import frc.robot.subsystems.swerve.SwerveModuleIOSparkMax;
 
 /**
@@ -33,25 +32,25 @@ public final class Constants {
     // MODIFY THIS WHEN SWITCHING BETWEEN CHASSIS
     // THIS IS THE FIRST THING YOU SHOULD THINK ABOUT/SEE!!!
 
+    private static final RobotType ROBOT_TYPE = RobotType.ROBOT_2023_IAP_SLOTH;
+
     public static final class SwerveModuleIOConfig{
+        // Drive can ids start at front left from 1 and are odd, then go clockwise
+        // Turn can ids start at front left from 2 and are even, then go clockwise
+        // CANCoder ids start at front left from 10 and are sequential, then go clockwise
+        // What about 9 you may ask? We need to reserve this since the new PDP usea that id
         static SwerveModuleIOSparkMax module0 = new SwerveModuleIOSparkMax(//front left
-                0, 1,2,9,-62.51,false);
+                0, 1,2,9,ROBOT_TYPE.moduleAngleOffsets[0],false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         static SwerveModuleIOSparkMax module1 = new SwerveModuleIOSparkMax(//front right
-                1, 3,4,10,-179.82,true);
+                1, 3,4,10,ROBOT_TYPE.moduleAngleOffsets[1],true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module2 = new SwerveModuleIOSparkMax(//back left
-                2, 5,6,11,108.11,false);
+        static SwerveModuleIOSparkMax module2 = new SwerveModuleIOSparkMax(//back right
+                2, 5,6,11,ROBOT_TYPE.moduleAngleOffsets[2],true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module3 = new SwerveModuleIOSparkMax(//back right
-                3, 7,8,12,82.62,true);
+        static SwerveModuleIOSparkMax module3 = new SwerveModuleIOSparkMax(//back left
+                3, 7,8,12,ROBOT_TYPE.moduleAngleOffsets[3],false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        
-        //fix simulation
-        // static SwerveModuleIOSim simModule0 = new SwerveModuleIOSim(0);
-        // static SwerveModuleIOSim simModule1 = new SwerveModuleIOSim(1);
-        // static SwerveModuleIOSim simModule2 = new SwerveModuleIOSim(2);
-        // static SwerveModuleIOSim simModule3 = new SwerveModuleIOSim(3);
     }
    
 
@@ -66,27 +65,33 @@ public final class Constants {
         //distance between swerve modules on x and y axis
         public static final double swerveModuleXdistance = Units.inchesToMeters(22); 
         public static final double swerveModuleYdistance = Units.inchesToMeters(22); 
-        //public static final double trackWidthHypotenuse = Math.sqrt(Math.pow(trackWidthX, 2) + Math.pow(trackWidthY, 2));
-
-        public static final Translation2d[] translations = new Translation2d[] {
+        
+        //Module locations in meters
+        public static final Translation2d[] moduleLocations = new Translation2d[] {
             new Translation2d( swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
             new Translation2d( swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
-            new Translation2d(-swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
-            new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0) };
+            new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
+            new Translation2d(-swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0) };
 
         // Joystick deadband for no accidental movement
         public static final double deadBand = 0.05;
 
-        // Wheels/gears should be facing inwards when calibrating the chassis
-        //public static final boolean[] moduleInverts = {false, true, false, true};
+        //Probs need to update this and move it to RobotType
+        public static final double robotMassInKg = 120;
+
+        public static final double wheelGripCoefficientOfFriction = 1.19;
     }
 
+    //We use SDS MK4i L1 modules. Google it if you want to verify all this stuff
     public static final class ModuleConstants {
-        
+
+        public static final int driveCurrentLimit = 35;
+        public static final int turnCurrentLimit = 20;
+
         public static final double wheelDiameterMeters = Units.inchesToMeters(4.0); // Assuming SDS module
         
         public static final double driveGearRatio = 8.14; // For SDS MK4i module
-        public static final double turnGearRatio = 150.0/7.0; // For SDS MK4i module
+        public static final double turnGearRatio = 150.0/7.0; // For SDS MK4i module 21.4285714
         public static final double CANCoderGearRatio = 1.0; // Direct measurement
 
         // Both of these measurements should be correct
@@ -96,8 +101,9 @@ public final class Constants {
         // In RPM
         public static final double drivingEncoderVelocityPositionFactor = ((Math.PI * wheelDiameterMeters) / driveGearRatio) / 60.0;
 
-        public static final double turningEncoderPositionFactor = (2 * Math.PI) / turnGearRatio; // radians
-        public static final double turningEncoderVelocityFactor = (2 * Math.PI) / turnGearRatio / 60.0; // radians per second
+        //Rotations per steering rotation for the angle motor need to account for gear ratio
+        public static final double turningEncoderPositionFactor = 1 / turnGearRatio;
+        public static final double turningEncoderVelocityFactor = turningEncoderPositionFactor / 60;
 
         // Confirmed working kP!!
         public static final double drivekP = 0.1; // This is good!
@@ -107,7 +113,7 @@ public final class Constants {
 
         // See REV: https://motors.vex.com/other-motors/neo
         // The 5790 value is the correct empirical value from the woodblocks
-        // TODO - Might need to be re-calibrated for carpet or concrete
+        // Might need to be re-calibrated for carpet or concrete
         public static final double maxRPMWoodBlocks = 5790.0;
         public static final double maxRPMCarpet = 5280.0;
 
@@ -128,11 +134,16 @@ public final class Constants {
 
         public static final double turnkP = 0.7; 
         public static final double turnkI = 0.0;
-        public static final double turnkD = 0.0;
+        public static final double turnkD = 0.0;    
+    }
 
-        public static final int driveCurrentLimit = 35;
-        public static final int turnCurrentLimit = 20;
+    public static final class ElevatorConstants {
+        private static final double MotorKV = 473.0; // For neo v1.1
+        public static final double FF = 1/MotorKV; // For neo v1.1
+        public static final double P = .0085;
 
     }
+
+    public static final int PDH_can_id = 15;
 
 }
