@@ -105,7 +105,7 @@ public class RobotContainer {
     //Elevator stop for bound 1 and 2 - between -0.1 and 0.1
     Trigger elevStopB2 = mechXboxController.axisGreaterThan(5, -0.1);
     
-    elevStopB1.and(elevStopB2).onTrue(elevator.stopElevator());  // It needs to hold position not completely stop
+    elevStopB1.and(elevStopB2).onTrue(elevator.stallElevator());  // It needs to hold position not completely stop
     // if the joystick changes from moving to being still (in bounds), then stop the elevator. It only toggles when the state changes, not repeatidly
     mechXboxController.a().onTrue(elevator.setHeightL1()); //on button press
     mechXboxController.b().onTrue(elevator.setHeightL2()); //on button press

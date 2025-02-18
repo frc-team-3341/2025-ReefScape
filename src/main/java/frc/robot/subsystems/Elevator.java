@@ -171,6 +171,12 @@ public class Elevator extends SubsystemBase {
         });
     }
 
+    public Command stallElevator(){
+        return this.run(()->{
+            PIDController.setReference(conversionFactor*this.currentPos, SparkMax.ControlType.kPosition);
+        });
+    }
+
     public boolean isREVPressed() {
         return revLimit.isPressed();
     }
