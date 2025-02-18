@@ -46,9 +46,9 @@ public class RobotContainer {
 
   public RobotContainer() {
     createSwerve();
-    //createDeepHang();
-    //createCoralManipulator();
-    //createElevator();
+    createDeepHang();
+    // createCoralManipulator();
+    createElevator();
   }
 
   private void createSwerve() {
@@ -89,7 +89,7 @@ public class RobotContainer {
   }
 
 
-  private void configureBindings() {
+  private void createElevator() {
     mechXboxController.a().onTrue(elevator.homing());
 
         
