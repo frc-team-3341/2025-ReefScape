@@ -156,7 +156,7 @@ public class Vision extends SubsystemBase{
    
 
     public boolean rotationalAtSetpoint() {
-        if (getZAngle() < 179 || getZAngle() > 181) {
+        if (getZAngle() < 178 || getZAngle() > 182) {
             return false;
         }
         return true;
@@ -195,9 +195,6 @@ public class Vision extends SubsystemBase{
         return pidVal;
     }
 
-
-
-
     public boolean horizontalAtSetpoint() {
         if (getHorizontalDisplacement() < array[0] || getHorizontalDisplacement() > array[1]) {
             return false;
@@ -223,6 +220,13 @@ public class Vision extends SubsystemBase{
         return false;
     }
 
+    public boolean approachingSetpoint() {
+        if(getZAngle() > 150 && getZAngle() < 210) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void periodic() {
         //update targetData with current info
@@ -230,7 +234,7 @@ public class Vision extends SubsystemBase{
         if (targetDetected()) {
             horizVals.add(0, getHorizontalDisplacement());
             rotVals.add(0, getZAngle());
-        }
+        } 
 
         // SmartDashboard.putNumber("axis val", cont.getRawAxis(0));
         // SmartDashboard.putNumber("axis val 2", cont.getRawAxis(1));

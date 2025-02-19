@@ -22,7 +22,7 @@ public class Alignment extends Command{
     double lHorizDirection;
     double lRotDirection;
 
-    PIDController pid = new PIDController(1.0, 0, 0.033);
+    PIDController pid = new PIDController(0.6, 0, 0.03);
 
     // PIDController pid2 = new PIDController(0.5, 0, 0.02);
 
@@ -48,7 +48,7 @@ public class Alignment extends Command{
     //     rotDirection = vision.getRotationalDirection();
     //     horizDirection = vision.getHorizontalDirection();
 
-    //     swerve.drive(new Translation2d(0, 0.3*horizDirection), 0.3*rotDirection, false, false);
+    //     swerve.drive(new Translation2d(0, 0.5*horizDirection), 0.5*rotDirection, false, false);
     //   }
     //   else if (!vision.targetDetected() && (vision.getLastHorizPosition() != 0 || vision.getLastRotAngle() != 0)) {
 
@@ -112,11 +112,9 @@ public class Alignment extends Command{
 
         //rotational speed is proportional to horizontal driving speed when output is small to prevent robot from rotating out of view
         if (Math.abs(horizDirection) < 0.01) {
-            swerve.drive(new Translation2d(0, 5.0*horizDirection), Math.abs(horizDirection)*rotDirection*120, false, false);
-            System.out.println("close: " + (5.0*horizDirection));
+            swerve.drive(new Translation2d(0, 5.0*horizDirection), Math.abs(horizDirection)*rotDirection*100, false, false);
         }
         swerve.drive(new Translation2d(0, 3.0*horizDirection), 0.2*rotDirection, false, false);
-        System.out.println("far: " + (3.0*horizDirection));
       }
       else if (!vision.targetDetected() && (vision.getLastHorizPosition() != 0 || vision.getLastRotAngle() != 0)) {
 
@@ -128,19 +126,19 @@ public class Alignment extends Command{
             lHorizDirection = 1;
         }
 
-        if (vision.getLastRotAngle() < 178) {
-            lRotDirection = 1;
-        }
-
-        else if (vision.getLastRotAngle() > 182) {
+        if (vision.getLastRotAngle() > 182 && vision.getLastHorizPosition() < 0) {
             lRotDirection = -1;
         }
+
+        else if (vision.getLastRotAngle() < 178 && vision.getLastHorizPosition() > 0) {
+            lRotDirection = 1;
+        }
         
-        swerve.drive(new Translation2d(0, 0.3*lHorizDirection), 0.3*lRotDirection, false, false);
+        swerve.drive(new Translation2d(0, 0.6*lHorizDirection), 0.6*lRotDirection, false, false);
       }
       if (vision.joystickHeld()) {
        
-        swerve.drive(new Translation2d(-0.6*xbox.getRawAxis(1), -0.6*xbox.getRawAxis(0)), -1.0*xbox.getRawAxis(4), false, false);
+        swerve.drive(new Translation2d(-0.65*xbox.getRawAxis(1), -0.65*xbox.getRawAxis(0)), -0.8*xbox.getRawAxis(4), false, false);
       }
     }
 
