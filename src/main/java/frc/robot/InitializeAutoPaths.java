@@ -38,6 +38,9 @@ public class InitializeAutoPaths {
     private IyerTCase iyerCase;
     private CaseResetPose poseResetCase;
     private DIW diw;
+    private TestPath testPath1;
+    private OptPath optPath;
+    
 
     
     RobotConfig config;
@@ -81,11 +84,14 @@ public class InitializeAutoPaths {
           iyerCase = new IyerTCase(this.swerve);
           poseResetCase = new CaseResetPose(this.swerve);
           diw = new DIW(this.swerve);
+          testPath1 = new TestPath(this.swerve);
           autoCommandChooser.setDefaultOption("Test Path", testPath);
           autoCommandChooser.addOption("Test Case 215", testCase215);
           autoCommandChooser.addOption("IyerT Case", iyerCase);
           autoCommandChooser.addOption("CaseResetPose", poseResetCase);
           autoCommandChooser.addOption("DIW", diw);
+          autoCommandChooser.addOption("testPath", testPath1);
+          autoCommandChooser.addOption("optPath", optPath);
           SmartDashboard.putData(autoCommandChooser);
 
         } catch (FileVersionException | IOException | ParseException e) {

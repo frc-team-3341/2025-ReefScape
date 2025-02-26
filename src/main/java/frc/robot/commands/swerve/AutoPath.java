@@ -26,6 +26,7 @@ public class AutoPath extends SequentialCommandGroup {
   SwerveDriveTrain swerve;
   boolean firstPath;
   Pose2d initialPose;
+  
 
   /**
    * Creates a new SwerveAuto.
