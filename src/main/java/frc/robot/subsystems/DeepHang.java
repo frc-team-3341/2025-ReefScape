@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -12,17 +11,15 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SoftLimitConfig;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,7 +33,17 @@ public class DeepHang extends SubsystemBase {
   private SparkLimitSwitch upperLimit;
   private SparkLimitSwitch lowerLimit;
 
+  private double value;
+  private double defValue = 0.5;
+
+  private AHRS imu;
+  private DigitalInput inductiveSensor;
+
   public DeepHang() {
+
+    imu = new AHRS(NavXComType.kMXP_SPI);
+    inductiveSensor = new DigitalInput(0);
+
     deepHang = new SparkMax(30, MotorType.kBrushless);
     hangEncoder = deepHang.getEncoder();
     hangEncoder.setPosition(0);
@@ -62,7 +69,7 @@ public class DeepHang extends SubsystemBase {
     softLimitConfig.forwardSoftLimit(95);
     softLimitConfig.reverseSoftLimit(-95);
     //config.apply(softLimitConfig);
-   
+  
     //configures the motor controller with the specified configuration
     deepHang.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters); 
   }
@@ -72,15 +79,15 @@ public class DeepHang extends SubsystemBase {
   }
 
   public double getVelocity(){
-    return hangEncoder.getPosition() * 1/3 / 60;
+    return hangEncoder.getVelocity() * 1/3 / 60;
   }
 
   public double getLinearPosition() {
-    return hangEncoder.getPosition() * 0.2; //1 rotation of the encoder translates to 0.2 inches of height
+    return getPosition() * 0.2; //linear position in inches
   }
 
   public double getLinearVelocity() {
-    return hangEncoder.getVelocity() * 0.2;
+    return getVelocity() * 0.2;
   }
 
 
@@ -89,6 +96,9 @@ public class DeepHang extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
     SmartDashboard.putNumber("Encoder Velocity", hangEncoder.getVelocity()); //in rotations per second
+
+    value = SmartDashboard.getNumber("Setpoint Value", defValue);
+    SmartDashboard.putNumber("Setpoint Value", value); //double from 0 to 1
 
     SmartDashboard.putNumber("Linear Position", getLinearPosition()); //in inches
     SmartDashboard.putNumber("Linear Velocity", getLinearVelocity()); //in inches per second
@@ -99,19 +109,16 @@ public class DeepHang extends SubsystemBase {
     boolean upperBool = upperLimit.isPressed();
     boolean lowerBool = lowerLimit.isPressed();
     SmartDashboard.putBoolean("upper is pressed", upperBool);
+    if(upperBool){
+      hangEncoder.setPosition(0);
+    }
     SmartDashboard.putBoolean("lower is pressed", lowerBool);
 
-    // returns true if the circut is closed -- when a metalic object is close to the sensor
-    // SmartDashboard.putBoolean("Inductive Sensor", !inductiveSensor.get());
+    SmartDashboard.putNumber("Pitch", Math.abs(imu.getPitch())); //from y-axis
+    SmartDashboard.putNumber("Roll", Math.abs(imu.getRoll())); //from x-axis
 
-    // SmartDashboard.putBoolean("Upper Limit", upperLimit.isPressed());
-    // SmartDashboard.putBoolean("Lower Limit", lowerLimit.isPressed());
+    SmartDashboard.putBoolean("Inductive Sensor", !inductiveSensor.get());
 
-    //logs the tilt of the chassis relative to the ground
-    //SmartDashboard.putNumber("Pitch", imu.getPitch());
-    //SmartDashboard.putNumber("Roll", imu.getRoll());
-    //SmartDashboard.putNumber("Tilt",
-    //Math.sqrt(Math.pow(imu.getPitch(), 2) + Math.pow(imu.getRoll(), 2)));
 
     SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
   }
@@ -122,13 +129,13 @@ public class DeepHang extends SubsystemBase {
 
   public Command fwd() {
     return this.runOnce(() -> {
-      deepHang.set(.5);
+      deepHang.set(value);
     });
   }
 
   public Command rev() {
     return this.runOnce(() -> {
-      deepHang.set(-.5);
+      deepHang.set(-value);
     });
   }
 
@@ -137,4 +144,13 @@ public class DeepHang extends SubsystemBase {
       deepHang.set(0);
     });
   }
+
+  public Command homing() {
+    return this.runOnce(() -> {
+      while(hangEncoder.getPosition() > 0) {
+        deepHang.set(.5);
+      }
+    });
+  }
+
 }

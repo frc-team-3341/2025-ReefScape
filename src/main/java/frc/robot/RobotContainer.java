@@ -28,7 +28,8 @@ public class RobotContainer {
 
   // Xbox + an additional one for PC use
   private final Joystick drivingXbox = new Joystick(0);
-  private final CommandXboxController mechXboxController = new CommandXboxController(1);
+  //private final CommandXboxController mechXboxController = new CommandXboxController(1);
+  private final Joystick mechXboxController = new Joystick(1);
 
   private SwerveDriveTrain swerveDriveTrain;
 
@@ -43,10 +44,10 @@ public class RobotContainer {
   private Elevator elevator;
 
   public RobotContainer() {
-    //createSwerve();
-    //createDeepHang();
+    createSwerve();
+    createDeepHang();
     //createCoralManipulator();
-    createElevator();
+    //createElevator();
   }
 
   private void createSwerve() {
@@ -69,17 +70,31 @@ public class RobotContainer {
     deepHang = new DeepHang();
     
     //deepHang.setDefaultCommand(deepHang.stop());
-    mechXboxController.povUp().whileTrue(deepHang.fwd());
-    mechXboxController.povUp().onFalse(deepHang.stop());
+    //mechXboxController.povUp().whileTrue(deepHang.fwd());
+    //mechXboxController.povUp().onFalse(deepHang.stop());
 
-    mechXboxController.povDown().whileTrue(deepHang.rev());
-    mechXboxController.povDown().onFalse(deepHang.stop());
+    //mechXboxController.povDown().whileTrue(deepHang.rev());
+    //mechXboxController.povDown().onFalse(deepHang.stop());
+    if(mechXboxController.getRawAxis(1) > 0.1){
+      deepHang.fwd();
+    } else if(mechXboxController.getRawAxis(1) < -0.1){
+      deepHang.rev();
+    } else {
+      deepHang.stop();
+    }
+
+    if(mechXboxController.getRawButton(20)) {
+      deepHang.homing();
+    }
+    //mechXboxController.x().onTrue(deepHang.homing());
   }
 
   private void createCoralManipulator() {
+  /* 
     coralManipulator = new CoralManipulator(()->{
       return mechXboxController.getLeftY();
     });
+  */
     //coralManipulator.setDefaultCommand(coralManipulator.stopCoral());
     /** 
     mechXboxController.axisGreaterThan(2, 0).whileTrue(coralManipulator.pivotStop());
@@ -99,14 +114,18 @@ public class RobotContainer {
     
     coralStopB1.and(coralStopB2).onTrue(coralManipulator.pivotStop()); 
     */
+  /*
     mechXboxController.a().onTrue(coralManipulator.intakeCoral()).onFalse(coralManipulator.stopCoral());
     mechXboxController.b().onTrue(coralManipulator.releaseCoral()).onFalse(coralManipulator.stopCoral());
-  }
+  */
+    }
 
   private void createElevator() {
+  /*
     elevator = new Elevator(()->{
       return mechXboxController.getRightY();
     });
+  */
     //mechXboxController.leftBumper().onTrue(elevator.homing());
     //mechXboxController.rightBumper().onTrue(elevator.stopElevator());
     
@@ -116,11 +135,12 @@ public class RobotContainer {
     //mechXboxController.x().onTrue(elevator.setHeightL3()); //on button press
     //mechXboxController.y().onTrue(elevator.setHeightL4()); //on button press
     //We apply the deadband inside this function
+  /*
     mechXboxController.y().toggleOnTrue(elevator.moveElevator());
 
     //Should change this stop to stall so the elevator can hold its position
     mechXboxController.y().toggleOnFalse(elevator.stopElevator());
-    
+  */
   }
 
   public Command getAutonomousCommand() {
