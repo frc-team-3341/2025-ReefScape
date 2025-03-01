@@ -109,11 +109,11 @@ public class SwerveDriveTrain extends SubsystemBase {
       SwerveUtil.drawModulePoses(modulePositions, field, getPoseFromEstimator());
 
       // Put field on SmartDashboard
-      SmartDashboard.putData("Field", this.field);
-      SmartDashboard.putNumberArray("Actual States", SwerveUtil.getDoubleStates(getActualStates()));
-      SmartDashboard.putNumberArray("Setpoint States", SwerveUtil.getDoubleStates(getSetpointStates()));
-      SmartDashboard.putNumber("Robot Rotation", getPoseFromEstimator().getRotation().getRadians());
-      SmartDashboard.putNumber("Angle", getHeading());
+      // SmartDashboard.putData("Field", this.field);
+      // SmartDashboard.putNumberArray("Actual States", SwerveUtil.getDoubleStates(getActualStates()));
+      // SmartDashboard.putNumberArray("Setpoint States", SwerveUtil.getDoubleStates(getSetpointStates()));
+      // SmartDashboard.putNumber("Robot Rotation", getPoseFromEstimator().getRotation().getRadians());
+      // SmartDashboard.putNumber("Angle", getHeading());
 
       targetStatePublisher.set(getSetpointStates());
       statePublisher.set(getActualStates());

@@ -221,7 +221,7 @@ public class Vision extends SubsystemBase{
     }
 
     public boolean approachingSetpoint() {
-        if(getZAngle() > 150 && getZAngle() < 210) {
+        if(getZAngle() > 175 && getZAngle() < 185) {
             return true;
         }
         return false;
