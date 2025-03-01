@@ -32,7 +32,7 @@ public final class Constants {
     // MODIFY THIS WHEN SWITCHING BETWEEN CHASSIS
     // THIS IS THE FIRST THING YOU SHOULD THINK ABOUT/SEE!!!
 
-    private static final RobotType ROBOT_TYPE = RobotType.ROBOT_2024_COMPETITION;
+    private static final RobotType ROBOT_TYPE = RobotType.ROBOT_2025_COMPETITION;
 
     public static final class SwerveModuleIOConfig{
         // Drive can ids start at front left from 1 and are odd, then go clockwise
