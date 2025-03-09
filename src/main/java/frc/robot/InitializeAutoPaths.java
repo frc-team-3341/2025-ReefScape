@@ -30,6 +30,12 @@ public class InitializeAutoPaths {
     
     // Plays:
     private StraightLine straightLine;
+    //1st part of auto phase path
+    private StartingPos_CoralLoc4 startingPosCoralLoc4;
+    //2nd part of auto phase path
+    private CoralLoc4_CStation coralLoc4CStation;
+    //3rd part of auto phase path
+    private CStation_CoralLoc2 cStationCoralLoc2;
 
     RobotConfig config;
 
@@ -71,6 +77,13 @@ public class InitializeAutoPaths {
           straightLine = new StraightLine(this.swerve);
           
           autoCommandChooser.setDefaultOption("straightLine", straightLine);
+          //1st part of auto path phase
+          autoCommandChooser.addOption("startingPosCoralLoc4", startingPosCoralLoc4);
+          //2nd part of auto path phase
+          autoCommandChooser.addOption("coralLoc4CStation", coralLoc4CStation);
+          //3rd part of auto path phase
+          autoCommandChooser.addOption("cStationCoralLoc2", cStationCoralLoc2);
+
           SmartDashboard.putData(autoCommandChooser);
 
         } catch (FileVersionException | IOException | ParseException e) {
