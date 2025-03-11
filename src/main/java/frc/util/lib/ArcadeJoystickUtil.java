@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * ArcadeJoystickUtil.java:47: error: unmappable character (0x9D) for encoding windows-1252
  */
 
-/** A class providing a helper method for converting x-y control (x ∈ [-1, 1], y ∈ [-1, 1]) to scaled polar coordinates (arcade drive/stick). See convertXYToScaledPolar for more details */
+/** A class providing a helper method for converting x-y control (x e [-1, 1], y e [-1, 1]) to scaled polar coordinates (arcade drive/stick). See convertXYToScaledPolar for more details */
 public class ArcadeJoystickUtil {
 
     /**
@@ -65,7 +65,7 @@ public class ArcadeJoystickUtil {
      * @param xVal Value of x such that x ∈ [-1, 1]
      * @param yVal Value of y such that y ∈ [-1, 1]
      * @param maxMagnitude Any magnitude of any value
-     * @return double[] of radial component and angular component, such that r ∈ [0, <i>magnitude</i>] and 𝜃 ∈ [0, 2𝜋].
+     * @return double[] of radial component and angular component, such that r e [0, <i>magnitude</i>] and angle e [0, 2pi].
      */
     public double[] convertXYToScaledPolar(double xVal, double yVal, double maxMagnitude) {
         /*

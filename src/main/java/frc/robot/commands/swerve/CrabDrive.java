@@ -5,8 +5,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveDriveTrain;
-import frc.util.lib.AsymmetricLimiter;
 import frc.util.lib.ArcadeJoystickUtil;
+import frc.util.lib.AsymmetricLimiter;
 
 public class CrabDrive extends Command {
    // Initialize empty swerve object
@@ -68,13 +68,13 @@ public class CrabDrive extends Command {
       double correctedY = yMult * newHypot * Math.sin(output[1]);
 
       // Drive swerve with values
-      this.swerve.drive(new Translation2d(correctedX, correctedY), 0.0, false, false);
+      this.swerve.drive(new Translation2d(correctedX, correctedY), 0.0, false);
    }
 
    // Called once the command ends or is interrupted.
    @Override
    public void end(boolean interrupted) {
-      this.swerve.drive(new Translation2d(0, 0), 0, false, true);
+      this.swerve.drive(new Translation2d(0, 0), 0, true);
       
       // PLEASE SET THIS FOR SAFETY!!!
       this.swerve.stopMotors();

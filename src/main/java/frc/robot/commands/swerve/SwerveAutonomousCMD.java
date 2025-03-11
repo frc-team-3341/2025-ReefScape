@@ -28,7 +28,7 @@ public class SwerveAutonomousCMD extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        this.swerveDriveTrain.drive(new Translation2d(0, 0), 0, true, false);
+        this.swerveDriveTrain.drive(new Translation2d(0, 0), 0, false);
         // PLEASE SET THIS FOR SAFETY!!!
         this.swerveDriveTrain.stopMotors();
     }

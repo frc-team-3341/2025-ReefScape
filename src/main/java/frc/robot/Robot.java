@@ -4,15 +4,14 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import java.util.Optional;
-
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -63,7 +62,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    m_robotContainer.disablePoseEst();
+  }
 
   @Override
   public void teleopInit() {
@@ -71,6 +72,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    //Uncomment this if you want to disable pose est when running teleop
+    //This will allow allignment to work
+    //m_robotContainer.disablePoseEst();
     
     alliance = DriverStation.getAlliance();
     
