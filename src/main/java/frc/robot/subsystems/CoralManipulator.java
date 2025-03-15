@@ -84,16 +84,16 @@ public class CoralManipulator extends SubsystemBase {
         SoftLimitConfig softLimitConfig = new SoftLimitConfig();
         softLimitConfig.forwardSoftLimitEnabled(true);
         softLimitConfig.reverseSoftLimitEnabled(true);
-
+        
         // Updated Soft Limits
         //double forwardSoftLimit = zereodOffsetDegrees + (10.0 / 360.0);    // +10 degrees up
         //double reverseSoftLimit = zereodOffsetDegrees + (-44.0 / 360.0);   // -44 degrees down
-
-        //softLimitConfig.forwardSoftLimit((float) forwardSoftLimit);
-        //softLimitConfig.reverseSoftLimit((float) reverseSoftLimit);
+        
+        softLimitConfig.forwardSoftLimit((float) 0.09);
+        softLimitConfig.reverseSoftLimit((float) -0.23);
 
         // Apply configurations
-        // pivotConfig.apply(softLimitConfig);
+        pivotConfig.apply(softLimitConfig);
         
         pivotConfig.apply(limitSwitchConfig);
         pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
