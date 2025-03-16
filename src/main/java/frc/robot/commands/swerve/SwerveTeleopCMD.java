@@ -56,7 +56,7 @@ public class SwerveTeleopCMD extends Command {
 
       
       if (rightTriggerVal < 0.1) {
-         rightTriggerVal = 0.1;
+         rightTriggerVal = 0.3;
       }
 
       // Inverts the speed control, so that the user can slow down instead of speeding up
@@ -87,7 +87,7 @@ public class SwerveTeleopCMD extends Command {
 
       // Drive swerveDriveTrain with values
       this.swerveDriveTrain.drive(new Translation2d(correctedX, correctedY),
-            rotationVal * Constants.SwerveConstants.maxChassisAngularVelocity,
+            rotationVal * Constants.SwerveConstants.maxChassisAngularVelocity * rightTriggerVal,
              false);
    }
 
