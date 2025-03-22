@@ -110,10 +110,10 @@ public class SwerveDriveTrain extends SubsystemBase {
     * 
     * @author Aric Volman
     */
-   public SwerveDriveTrain(Pose2d startingPose, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BR, SwerveModuleIOSparkMax BL,
+   public SwerveDriveTrain(Pose2d startingPose, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BL, SwerveModuleIOSparkMax BR,
                            Vision vision, DoubleSupplier leftTriggerVal) {
       // Assign modules to their object
-      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BR, BL };
+      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BL, BR};
 
       // Iterate through module positions and assign initial values
       modulePositions = SwerveUtil.setModulePositions(moduleIO);

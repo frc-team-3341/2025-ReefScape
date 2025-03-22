@@ -10,16 +10,28 @@ package frc.robot;
  */
 public enum RobotType {
 
-    //These offsets should be in degrees will need to fix these
+    //These offsets should be in degrees
 
     // 2023 IAP Robot
-    ROBOT_2023_IAP_SLOTH(new double[] {-62.51, -179.82, 82.62, 108.11}),
+    ROBOT_2023_IAP_SLOTH(new double[] {
+        - 62.51, //FL
+        -179.82, //FR
+         108.11, //BL
+         82.62}),//BR
 
     // 2024 Competition Robot
-    ROBOT_2024_COMPETITION(new double[] {-12.21, -121.29, -133.154, -40.97}),
+    ROBOT_2024_COMPETITION(new double[] {
+        - 12.21,   //FL
+        -121.29,   //FR
+        - 40.97,   //BL
+        -133.154}),//BR
 
-    //2025 Competetion Robot             FL      FR    BR       BL           
-    ROBOT_2025_COMPETITION(new double[] {-57.30, 3.60, 153.13, -83.51}),
+    //2025 Competetion Robot        
+    ROBOT_2025_COMPETITION(new double[] {
+        - 57.30,  //FL
+           3.60,  //FR
+        - 83.51,  //BL
+         153.13}),//BR
 
     // Simulation robot
     ROBOT_SIMULATION(new double[] {0, 0, 0, 0});

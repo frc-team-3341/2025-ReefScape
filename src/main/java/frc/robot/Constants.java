@@ -46,21 +46,20 @@ public final class Constants {
     private static final RobotType ROBOT_TYPE = RobotType.ROBOT_2025_COMPETITION;
 
     public static final class SwerveModuleIOConfig{
-        // Drive can ids start at front left from 1 and are odd, then go clockwise
-        // Turn can ids start at front left from 2 and are even, then go clockwise
-        // CANCoder ids start at front left from 10 and are sequential, then go clockwise
-        // What about 9 you may ask? We need to reserve this since the new PDP usea that id
+        // Drive can ids start at front left from 1 and are odd
+        // Turn can ids start at front left from 2 and are even
+        // CANCoder ids start at front left from 10 and are sequential
         static SwerveModuleIOSparkMax module0 = new SwerveModuleIOSparkMax(//front left
                 0, 1,2,9,ROBOT_TYPE.moduleAngleOffsets[0],false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
         static SwerveModuleIOSparkMax module1 = new SwerveModuleIOSparkMax(//front right
                 1, 3,4,10,ROBOT_TYPE.moduleAngleOffsets[1],false);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module2 = new SwerveModuleIOSparkMax(//back right
-                2, 5,6,11,ROBOT_TYPE.moduleAngleOffsets[2],true);
+        static SwerveModuleIOSparkMax module2 = new SwerveModuleIOSparkMax(//back left
+                2, 7,8,12,ROBOT_TYPE.moduleAngleOffsets[2],true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
-        static SwerveModuleIOSparkMax module3 = new SwerveModuleIOSparkMax(//back left
-                3, 7,8,12,ROBOT_TYPE.moduleAngleOffsets[3],true);
+        static SwerveModuleIOSparkMax module3 = new SwerveModuleIOSparkMax(//back right
+                3, 5,6,11,ROBOT_TYPE.moduleAngleOffsets[3],true);
                 //num // driveID // turnID // turnCANCoderID // turnEncoderOffset // invert
     }
 
@@ -80,8 +79,8 @@ public final class Constants {
         public static final Translation2d[] moduleLocations = new Translation2d[] {
             new Translation2d( swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
             new Translation2d( swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
-            new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0),
-            new Translation2d(-swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0) };
+            new Translation2d(-swerveModuleXdistance / 2.0,  swerveModuleYdistance / 2.0),
+            new Translation2d(-swerveModuleXdistance / 2.0, -swerveModuleYdistance / 2.0) };
 
         // Joystick deadband for no accidental movement
         public static final double deadBand = 0.05;
@@ -154,7 +153,7 @@ public final class Constants {
         public static final Transform3d kBottomRobotToCam =
                 new Transform3d(new Translation3d(Units.inchesToMeters(12.75), Units.inchesToMeters(0), Units.inchesToMeters(12.5)), new Rotation3d(0, 0, 0));
 
-        private static final double topCamPitch = Units.degreesToRadians(30.0);
+        private static final double topCamPitch = Units.degreesToRadians(25.0);
         public static final Transform3d kTopRobotToCam =
                 new Transform3d(new Translation3d(Units.inchesToMeters(9), Units.inchesToMeters(9.75), Units.inchesToMeters(35.5)),
                 new Rotation3d(0, -topCamPitch, 0));

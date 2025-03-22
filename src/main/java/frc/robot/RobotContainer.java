@@ -4,6 +4,8 @@ import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -47,6 +49,13 @@ public class RobotContainer {
   private Vision vision;
 
   public RobotContainer() {
+
+    // Starts recording to data log
+    DataLogManager.start();
+
+    // Record both DS control and joystick data
+    DriverStation.startDataLog(DataLogManager.getLog());
+
     createSwerve();
     createDeepHang();
     createCoralManipulator();
@@ -155,11 +164,11 @@ public class RobotContainer {
     new EventTrigger("Get Coral").onTrue(new SequentialCommandGroup(coralManipulator.intakeCoral(), new WaitCommand(1), coralManipulator.stopCoral()));
   
     SmartDashboard.putData("Homing", new ParallelCommandGroup(elevator.homeElevatorDown(), coralManipulator.pivotDown()));
-    SmartDashboard.putData("togglePoseEst", new SequentialCommandGroup(swerveDriveTrain.togglePoseEst(), vision.togglePoseEst()));
+    SmartDashboard.putData("togglePoseEst", new SequentialCommandGroup(vision.togglePoseEst()));
   }
 
   public void togglePoseEst() {
-    swerveDriveTrain.togglePoseEst();
+    //swerveDriveTrain.togglePoseEst();
     vision.togglePoseEst();
   }
 

@@ -3,29 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.678125,
-        "y": 6.5677556818181815
+        "x": 7.638597972972973,
+        "y": 7.029054054054053
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.200296374596922,
-        "y": 6.6258070791495935
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.4701136363636365,
-        "y": 6.747244318181817
-      },
-      "prevControl": {
-        "x": 3.2107554199453605,
-        "y": 7.559148300012941
-      },
-      "nextControl": {
-        "x": 3.699460227272727,
-        "y": 6.029289772727273
+        "x": 8.160769347569897,
+        "y": 7.087105451385465
       },
       "isLocked": false,
       "linkedName": null
@@ -33,11 +17,27 @@
     {
       "anchor": {
         "x": 4.008579545454546,
-        "y": 5.042102272727273
+        "y": 6.5677556818181815
       },
       "prevControl": {
-        "x": 3.884884292914012,
-        "y": 5.259356696155045
+        "x": 4.595016891891891,
+        "y": 7.157516891891891
+      },
+      "nextControl": {
+        "x": 3.477143746142861,
+        "y": 6.033307761707702
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.76,
+        "y": 4.96
+      },
+      "prevControl": {
+        "x": 3.628112748984049,
+        "y": 5.172381150339326
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.4813829787234042,
-      "rotationDegrees": -105.11583726282764
+      "rotationDegrees": -121.8454801845556
     }
   ],
   "constraintZones": [],
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "Go to L4",
-      "waypointRelativePos": 0.6882399368587245,
+      "waypointRelativePos": 0.33532934131737063,
       "endWaypointRelativePos": null,
       "command": null
     },
@@ -67,10 +67,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 0.8,
-    "maxAcceleration": 0.4,
+    "maxVelocity": 1.4,
+    "maxAcceleration": 1.2,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

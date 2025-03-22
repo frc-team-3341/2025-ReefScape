@@ -121,7 +121,7 @@ public class CoralManipulator extends SubsystemBase {
 
     public Command pivotPlace() {
         return this.runOnce(() -> {
-            this.setpoint = -.082;
+            this.setpoint = -.1;
             this.pidPivot.setReference(setpoint, SparkMax.ControlType.kPosition);
         });
     }
@@ -165,7 +165,7 @@ public class CoralManipulator extends SubsystemBase {
     public void periodic() {
         // SmartDashboard.putNumber("ABSENC POS", this.absEncoder.getPosition());
         SmartDashboard.putNumber("pivot Pos", this.absEncoder.getPosition());
-        SmartDashboard.putNumber("pivot vel", this.absEncoder.getVelocity());
+        // SmartDashboard.putNumber("pivot vel", this.absEncoder.getVelocity());
         //SmartDashboard.putNumber("Relative Encoder Angle", this.relEnc.getPosition()/this.conversionFactor);
 
         //SmartDashboard.putNumber("Angle of Pivot", (absEncoder.getPosition() * 360.0));
@@ -173,7 +173,7 @@ public class CoralManipulator extends SubsystemBase {
         //SmartDashboard.putNumber("Rotations", (absEncoder.getPosition()));
         SmartDashboard.putBoolean("Pivot FWD Limit", this.FWDLimit.isPressed());
         SmartDashboard.putBoolean("Pivot REV Limit", this.REVLimit.isPressed());
-        SmartDashboard.putNumber("pivot voltage", this.pivotMotor.getBusVoltage() * this.pivotMotor.getAppliedOutput());
+        // SmartDashboard.putNumber("pivot voltage", this.pivotMotor.getBusVoltage() * this.pivotMotor.getAppliedOutput());
         SmartDashboard.putBoolean("ProbablyHasCoral", probablyHasCoral);
     }
 

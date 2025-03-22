@@ -86,14 +86,14 @@ public class DeepHang extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
-    SmartDashboard.putNumber("Encoder Velocity", hangEncoder.getVelocity()); //in rotations per second
+    // SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
+    // SmartDashboard.putNumber("Encoder Velocity", hangEncoder.getVelocity()); //in rotations per second
 
-    SmartDashboard.putNumber("Linear Position", getLinearPosition()); //in inches
-    SmartDashboard.putNumber("Linear Velocity", getLinearVelocity()); //in inches per second
+    // SmartDashboard.putNumber("Linear Position", getLinearPosition()); //in inches
+    // SmartDashboard.putNumber("Linear Velocity", getLinearVelocity()); //in inches per second
 
-    SmartDashboard.putNumber("Voltage", deepHang.getAppliedOutput()); //in volts
-    SmartDashboard.putNumber("Current", (int) deepHang.getOutputCurrent()); //in amps
+    // SmartDashboard.putNumber("Voltage", deepHang.getAppliedOutput()); //in volts
+    // SmartDashboard.putNumber("Current", (int) deepHang.getOutputCurrent()); //in amps
 
     boolean upperBool = upperLimit.isPressed();
     boolean lowerBool = lowerLimit.isPressed();
@@ -112,9 +112,9 @@ public class DeepHang extends SubsystemBase {
     //SmartDashboard.putNumber("Tilt",
     //Math.sqrt(Math.pow(imu.getPitch(), 2) + Math.pow(imu.getRoll(), 2)));
 
-    SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
-    inductionSensor.setAverageBits(2);
-    SmartDashboard.putNumber("DeepHang Sensor", inductionSensor.getValue());
+    // SmartDashboard.putNumber("Encoder Position", hangEncoder.getPosition()); //in rotations
+    // inductionSensor.setAverageBits(2);
+    // SmartDashboard.putNumber("DeepHang Sensor", inductionSensor.getValue());
   }
 
   public void resetEncoder() {

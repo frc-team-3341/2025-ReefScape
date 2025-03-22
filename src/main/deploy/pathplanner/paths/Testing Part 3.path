@@ -3,43 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.08,
-        "y": 2.92
+        "x": 1.157,
+        "y": 7.276
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8500055771832007,
-        "y": 2.019242747027753
+        "x": 1.7253806818181818,
+        "y": 6.6278465909090905
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.45,
-        "y": 0.3
+        "x": 3.749318181818182,
+        "y": 4.962329545454544
       },
       "prevControl": {
-        "x": 2.115885423245221,
-        "y": 1.2531333834703065
+        "x": 2.749318181818182,
+        "y": 4.962329545454544
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4148936170212774,
+      "rotationDegrees": -20.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Home Elevator and Coral",
-      "waypointRelativePos": 0.32991318074191217,
+      "name": "Go to L4",
+      "waypointRelativePos": 0.44041041831097516,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
-      "name": "Get Coral",
+      "name": "Score Coral",
       "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": null
@@ -55,13 +60,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.27242144859844
+    "rotation": -57.215719134130836
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 58.46520809481176
+    "rotation": 130.0062560141766
   },
   "useDefaultConstraints": true
 }

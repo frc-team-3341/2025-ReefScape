@@ -33,20 +33,20 @@ public class Vision extends SubsystemBase{
 
     private final PhotonPoseEstimator bottomPhotonPoseEstimator;
     private final PhotonPoseEstimator topPhotonPoseEstimator;
-    private Matrix<N3, N1> bottomCurStdDevs;
-    private Matrix<N3, N1> topCurStdDevs;
+    private Matrix<N3, N1> bottomCurStdDevs = VisionConstants.kSingleTagStdDevs;
+    private Matrix<N3, N1> topCurStdDevs = VisionConstants.kSingleTagStdDevs;
 
     private Transform3d targetData;
     
     private final double[] array = {-0.03, 0.03};
     private CommandXboxController cont;
 
-    private ArrayList<Double> horizVals = new ArrayList<Double>();
-    private ArrayList<Double> rotVals = new ArrayList<Double>();
+    private double horizVals;
+    private double rotVals;
 
     private double pidVal;
 
-    private boolean enablePoseEst = false;
+    private boolean enablePoseEst = true;
 
     public Vision(CommandXboxController drivController) {
         this.cont = drivController;
@@ -240,11 +240,11 @@ public class Vision extends SubsystemBase{
     }
 
     public double getLastHorizPosition() {
-        return horizVals.get(0);
+        return horizVals;
     }
 
     public double getLastRotAngle() {
-        return rotVals.get(0);
+        return rotVals;
     }
 
 
@@ -271,8 +271,8 @@ public class Vision extends SubsystemBase{
             //update targetData with current info
             targetData = getTargetData();
             if (targetData != null) {
-                horizVals.add(0, getHorizontalDisplacement());
-                rotVals.add(0, getZAngle());
+                horizVals = getHorizontalDisplacement();
+                rotVals = getZAngle();
             } 
         }
         SmartDashboard.putBoolean("Pose est enabled", enablePoseEst);
@@ -311,19 +311,23 @@ public class Vision extends SubsystemBase{
       */
      public Optional<EstimatedRobotPose> getBottomCameraEstimatedGlobalPose() {
          Optional<EstimatedRobotPose> visionEst = Optional.empty();
-         for (var change : bottomCamera.getAllUnreadResults()) {
-            visionEst = bottomPhotonPoseEstimator.update(change);
-            bottomCurStdDevs = updateEstimationStdDevs(visionEst, change.getTargets());
-         }
+         if (enablePoseEst) {
+            for (var change : bottomCamera.getAllUnreadResults()) {
+                visionEst = bottomPhotonPoseEstimator.update(change);
+                bottomCurStdDevs = updateEstimationStdDevs(visionEst, change.getTargets(), bottomPhotonPoseEstimator);
+             }
+         }        
          return visionEst;
      }
 
      public Optional<EstimatedRobotPose> getTopCameraEstimatedGlobalPose() {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var change : topCamera.getAllUnreadResults()) {
-           visionEst = topPhotonPoseEstimator.update(change);
-            topCurStdDevs = updateEstimationStdDevs(visionEst, change.getTargets());
-        }
+        if (enablePoseEst) {
+            for (var change : topCamera.getAllUnreadResults()) {
+                visionEst = topPhotonPoseEstimator.update(change);
+                topCurStdDevs = updateEstimationStdDevs(visionEst, change.getTargets(), topPhotonPoseEstimator);
+             }
+        }      
         return visionEst;
     }
  
@@ -335,7 +339,7 @@ public class Vision extends SubsystemBase{
       * @param targets All targets in this camera frame
       */
      private Matrix<N3, N1> updateEstimationStdDevs(
-             Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+             Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets, PhotonPoseEstimator poseEstimator) {
          Matrix<N3, N1> stdDevs = VisionConstants.kSingleTagStdDevs;
          if (estimatedPose.isEmpty()) {
              // No pose input. Default to single-tag std devs
@@ -349,7 +353,7 @@ public class Vision extends SubsystemBase{
  
              // Precalculation - see how many tags we found, and calculate an average-distance metric
              for (var tgt : targets) {
-                 var tagPose = bottomPhotonPoseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+                 var tagPose = poseEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
                  if (tagPose.isEmpty()) continue;
                  numTags++;
                  avgDist +=
@@ -377,6 +381,8 @@ public class Vision extends SubsystemBase{
          }
          return stdDevs;
      }
+
+     
  
      /**
       * Returns the latest standard deviations of the estimated pose from {@link

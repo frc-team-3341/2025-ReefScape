@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 5.091960227272727
+        "x": 3.76,
+        "y": 4.96
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.008579545454546,
-        "y": 6.148948863636363
+        "x": 2.957182994913843,
+        "y": 5.437354549519751
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.4680397727272725
+        "x": 1.1067567567567567,
+        "y": 7.25633445945946
       },
       "prevControl": {
-        "x": 4.490056280132149,
-        "y": 6.386574331010836
-      },
-      "nextControl": {
-        "x": 3.460142045454545,
-        "y": 6.55778409090909
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.2663920454545454,
-        "y": 7.43528409090909
-      },
-      "prevControl": {
-        "x": 1.7450284090909092,
-        "y": 7.185994318181818
+        "x": 1.2138482612639112,
+        "y": 7.030433132189357
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 163.55747813092893
+      "waypointRelativePos": 0.5266272189349106,
+      "rotationDegrees": 150.72631700502086
     }
   ],
   "constraintZones": [],
@@ -55,22 +39,22 @@
   "eventMarkers": [
     {
       "name": "Home Elevator and Coral",
-      "waypointRelativePos": 0.26203630623519986,
+      "waypointRelativePos": 0.15,
       "endWaypointRelativePos": null,
       "command": null
     },
     {
       "name": "Get Coral",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.0,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 0.8,
-    "maxAcceleration": 0.4,
+    "maxVelocity": 1.4,
+    "maxAcceleration": 1.2,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
