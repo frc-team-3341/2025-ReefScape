@@ -113,7 +113,7 @@ public class SwerveDriveTrain extends SubsystemBase {
    public SwerveDriveTrain(Pose2d startingPose, SwerveModuleIOSparkMax FL, SwerveModuleIOSparkMax FR, SwerveModuleIOSparkMax BR, SwerveModuleIOSparkMax BL,
                            Vision vision, DoubleSupplier leftTriggerVal) {
       // Assign modules to their object
-      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BR, BL };
+      this.moduleIO = new SwerveModuleIOSparkMax[] { FL, FR, BL, BR };
 
       // Iterate through module positions and assign initial values
       modulePositions = SwerveUtil.setModulePositions(moduleIO);
@@ -216,23 +216,23 @@ public class SwerveDriveTrain extends SubsystemBase {
       
       poseEstimatorPublisher.set(poseEstimator.getEstimatedPosition());
 
-      this.field.setRobotPose(this.getPoseFromEstimator());
+      //this.field.setRobotPose(this.getPoseFromEstimator());
 
       // Update telemetry of each swerve module
       // SwerveUtil.updateTelemetry(moduleIO);
 
       // Draw poses of robot's modules in SmartDashboard
-      SwerveUtil.drawModulePoses(modulePositions, field, getPoseFromEstimator());
+      //SwerveUtil.drawModulePoses(modulePositions, field, getPoseFromEstimator());
 
       // Put field on SmartDashboard
-      SmartDashboard.putData("Field", this.field);
+      //SmartDashboard.putData("Field", this.field);
       SmartDashboard.putNumber("Robot Rotation", getPoseFromEstimator().getRotation().getDegrees());
       SmartDashboard.putNumber("Angle", getHeading());
 
       targetStatePublisher.set(getSetpointStates());
       statePublisher.set(getActualStates());
       absStatePublisher.set(getCanCoderStates());
-      chassisSpeedsPublisher.set(this.chassisSpeeds);
+      //chassisSpeedsPublisher.set(this.chassisSpeeds);
 
       /**
        * SmartDashboard.putData("Swerve Drive", new Sendable() {
@@ -311,8 +311,14 @@ public class SwerveDriveTrain extends SubsystemBase {
             Constants.SwerveConstants.maxChassisTranslationalSpeed,
             Constants.SwerveConstants.maxChassisAngularVelocity);
 
+      //Warning should fix after comp
+      //this.moduleIO[0].setDesiredState(swerveModuleStates[0]);
+      //this.moduleIO[1].setDesiredState(swerveModuleStates[1]);
+      //this.moduleIO[2].setDesiredState(swerveModuleStates[3]);
+      //this.moduleIO[3].setDesiredState(swerveModuleStates[2]);
+
       for (int i = 0; i < swerveModuleStates.length; i++) {
-         this.moduleIO[i].setDesiredState(swerveModuleStates[i]);
+        this.moduleIO[i].setDesiredState(swerveModuleStates[i]);
       }
    }
 
@@ -353,9 +359,13 @@ public class SwerveDriveTrain extends SubsystemBase {
     */
    public SwerveModuleState[] getSetpointStates() {
       SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
-      for (int i = 0; i < states.length; i++) {
-         states[i] = this.moduleIO[i].getDesiredState();
-      }
+      states[0] = this.moduleIO[0].getDesiredState();
+      states[1] = this.moduleIO[1].getDesiredState();
+      states[2] = this.moduleIO[3].getDesiredState();
+      states[3] = this.moduleIO[2].getDesiredState();
+     // for (int i = 0; i < states.length; i++) {
+      //   states[i] = this.moduleIO[i].getDesiredState();
+      //}
       return states;
    }
 
@@ -364,17 +374,25 @@ public class SwerveDriveTrain extends SubsystemBase {
     */
    public SwerveModuleState[] getActualStates() {
       SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
-      for (int i = 0; i < states.length; i++) {
-         states[i] = this.moduleIO[i].getActualModuleState();
-      }
+      states[0] = this.moduleIO[0].getActualModuleState();
+      states[1] = this.moduleIO[1].getActualModuleState();
+      states[2] = this.moduleIO[3].getActualModuleState();
+      states[3] = this.moduleIO[2].getActualModuleState();
+      //for (int i = 0; i < states.length; i++) {
+       //  states[i] = this.moduleIO[i].getActualModuleState();
+      //}
       return states;
    }
 
    public SwerveModuleState[] getCanCoderStates() {
       SwerveModuleState[] states = new SwerveModuleState[moduleIO.length];
-      for (int i = 0; i < states.length; i++) {
-         states[i] = this.moduleIO[i].getCanCoderState();
-      }
+      states[0] = this.moduleIO[0].getCanCoderState();
+      states[1] = this.moduleIO[1].getCanCoderState();
+      states[2] = this.moduleIO[3].getCanCoderState();
+      states[3] = this.moduleIO[2].getCanCoderState();
+      //for (int i = 0; i < states.length; i++) {
+       //  states[i] = this.moduleIO[i].getCanCoderState();
+      //}
       return states;
    }
 
