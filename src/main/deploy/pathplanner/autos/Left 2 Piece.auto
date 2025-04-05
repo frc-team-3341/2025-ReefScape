@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
+            "pathName": "left test 1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Far Side intake"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Far Side pt 2"
+            "waitTime": 3.0
           }
         }
       ]

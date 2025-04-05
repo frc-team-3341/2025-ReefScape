@@ -85,7 +85,7 @@ public class RobotContainer {
     this.swerveDriveTrain.setDefaultCommand(swerveTeleopCMD);
 
     //This requires the swerve subsystem make sure to create that first before creating this
-    //7drivingXbox.x().onTrue(this.swerveDriveTrain.toggleFieldCentric());
+    // drivingXbox.x().onTrue(this.swerveDriveTrain.toggleFieldCentric());
     drivingXbox.y().onTrue(this.swerveDriveTrain.resetHeadingCommand());
 
     drivingXbox.leftTrigger(0.02).whileTrue(swerveDriveTrain.driveForward());
@@ -141,7 +141,7 @@ public class RobotContainer {
     //when the rev limit is pressed an interrupt is sent to reset the encoders
     //instead of constantly checking in periodic if the rev limit switch is pressed
     elevatorHoming.onTrue(elevator.stopElevator());
-    elevatorHoming.onFalse(elevator.resetEncoder());
+    // elevatorHoming.onFalse(elevator.resetEncoder());
   }
 
   private void BALLASDHAKHSDHASDKJAS() {
@@ -159,9 +159,9 @@ public class RobotContainer {
 
     //These are for auto. Triggers that happen during auto paths to execute commands
     new EventTrigger("Go to L4").onTrue(new ParallelCommandGroup(elevator.setHeightL4(), coralManipulator.pivotL4()));
-    new EventTrigger("Score Coral").onTrue(new SequentialCommandGroup(new WaitCommand(2), coralManipulator.releaseCoral(), new WaitCommand(1), coralManipulator.stopCoral()));
+    new EventTrigger("Score Coral").onTrue(new SequentialCommandGroup(new WaitCommand(1), coralManipulator.releaseCoral(), new WaitCommand(1), coralManipulator.stopCoral()));
     new EventTrigger("Home Elevator and Coral").onTrue(gotoIntake);
-    new EventTrigger("Get Coral").onTrue(new SequentialCommandGroup(coralManipulator.intakeCoral(), new WaitCommand(1), coralManipulator.stopCoral()));
+    new EventTrigger("Get Coral").onTrue(new SequentialCommandGroup(new WaitCommand(0.75),coralManipulator.intakeCoral(), new WaitCommand(2), coralManipulator.stopCoral()));
   
     SmartDashboard.putData("Homing", new ParallelCommandGroup(elevator.homeElevatorDown(), coralManipulator.pivotDown()));
     SmartDashboard.putData("togglePoseEst", new SequentialCommandGroup(vision.togglePoseEst()));
